@@ -8,5 +8,17 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/tests/setup.ts'],
     exclude: ['node_modules/**', '.next/**'],
+    coverage: {
+      provider: 'v8',
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: ['src/tests/**'],
+      thresholds: {
+        perFile: true,
+        statements: 100,
+        branches: 100,
+        functions: 100,
+        lines: 100,
+      },
+    },
   },
 })

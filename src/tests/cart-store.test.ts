@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { useCartStore } from '@/store/cart'
-import type { Offer } from '@/services/types'
+
+import type { Offer } from '@/types'
+import { useCartStore } from '@/stores/cart'
 
 const offerA: Offer = {
   id: 'oferta-1',

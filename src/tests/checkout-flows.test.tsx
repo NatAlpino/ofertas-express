@@ -1,28 +1,59 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { http, HttpResponse } from 'msw'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi, beforeEach } from 'vitest'
-import { http, HttpResponse } from 'msw'
+import { render, screen, waitFor } from '@testing-library/react'
+
 import HomePage from '@/app/page'
-import CartPage from '@/app/carrinho/page'
-import CheckoutPage from '@/app/checkout/page'
-import { useCartStore } from '@/store/cart'
-import { createWrapper } from '@/tests/utils'
+import * as api from '@/services/api'
 import { server } from '@/mocks/server'
+import CartPage from '@/app/carrinho/page'
+import { useCartStore } from '@/stores/cart'
+import { createWrapper } from '@/tests/utils'
+import CheckoutPage from '@/app/checkout/page'
+import { useHistoryStore } from '@/stores/history'
+import { checkoutContent } from '@/content/checkout'
+import { useCompletedOffersStore } from '@/stores/offers'
 
 const pushMock = vi.fn()
+const replaceMock = vi.fn()
+const backMock = vi.fn()
+const writeTextMock = vi.fn().mockResolvedValue(undefined)
+
+const mockClipboard = () => {
+  Object.defineProperty(navigator, 'clipboard', {
+    value: { writeText: writeTextMock },
+    configurable: true,
+  })
+}
 
 vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push: pushMock, replace: vi.fn() }),
+  useRouter: () => ({ push: pushMock, replace: replaceMock, back: backMock }),
   usePathname: () => '/',
   useSearchParams: () => new URLSearchParams(),
 }))
 
 const renderScreen = (ui: React.ReactElement) => render(ui, { wrapper: createWrapper() })
 
+const addOfferToCart = (id = 'oferta-1') =>
+  useCartStore.getState().add({
+    id,
+    title: 'Negocie agora',
+    originalDebt: 245000,
+    offerPrice: 98000,
+  })
+
+const enableV2Flag = () =>
+  server.use(http.get('/api/feature-flags/checkoutV2', () => HttpResponse.json({ enabled: true })))
+
 describe('checkout flows', () => {
   beforeEach(() => {
     pushMock.mockClear()
+    replaceMock.mockClear()
+    backMock.mockClear()
+    writeTextMock.mockClear()
     useCartStore.getState().clear()
+    useCompletedOffersStore.setState({ completedIds: [] })
+    useHistoryStore.setState({ entries: [] })
     server.use(
       http.get('/api/feature-flags/checkoutV2', () => HttpResponse.json({ enabled: false }))
     )
@@ -56,9 +87,7 @@ describe('checkout flows', () => {
   })
 
   it('flag on: payment section appears and the chosen method is sent', async () => {
-    server.use(
-      http.get('/api/feature-flags/checkoutV2', () => HttpResponse.json({ enabled: true }))
-    )
+    enableV2Flag()
     let capturedBody: unknown
     server.use(
       http.post('/api/checkout', async ({ request }) => {
@@ -68,12 +97,7 @@ describe('checkout flows', () => {
     )
 
     const user = userEvent.setup()
-    useCartStore.getState().add({
-      id: 'oferta-1',
-      title: 'Negocie agora',
-      originalDebt: 245000,
-      offerPrice: 98000,
-    })
+    addOfferToCart()
 
     renderScreen(<CheckoutPage />)
 
@@ -89,6 +113,99 @@ describe('checkout flows', () => {
     )
   })
 
+  it('flag on pix: shows QR code, copies the code and concludes the agreement', async () => {
+    enableV2Flag()
+    const user = userEvent.setup()
+    mockClipboard()
+    addOfferToCart()
+
+    renderScreen(<CheckoutPage />)
+
+    await screen.findByRole('group', { name: 'Forma de pagamento' })
+    await user.click(screen.getByRole('button', { name: 'Confirmar pagamento' }))
+
+    expect(await screen.findByText('Pagamento via Pix')).toBeInTheDocument()
+    expect(screen.getByText(/validade de 30 minutos/)).toBeInTheDocument()
+    expect(screen.getByText(/00020126580014br\.gov\.bcb\.pix/)).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Copiar código' }))
+    expect(writeTextMock).toHaveBeenCalledWith(expect.stringContaining('br.gov.bcb.pix'))
+    expect(await screen.findByText('Código copiado!')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Concluir' }))
+
+    await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/'))
+    expect(useCartStore.getState().items).toHaveLength(0)
+    expect(useCompletedOffersStore.getState().completedIds).toContain('oferta-1')
+  })
+
+  it('flag on boleto: shows barcode, same-day due date and concludes', async () => {
+    enableV2Flag()
+    const user = userEvent.setup()
+    addOfferToCart()
+
+    renderScreen(<CheckoutPage />)
+
+    await screen.findByRole('group', { name: 'Forma de pagamento' })
+    await user.click(screen.getByRole('radio', { name: /Boleto/ }))
+    await user.click(screen.getByRole('button', { name: 'Confirmar pagamento' }))
+
+    expect(await screen.findByText('Pagamento via boleto')).toBeInTheDocument()
+    expect(
+      screen.getByText('23793.38128 60007.827136 95000.063305 1 99010000015500')
+    ).toBeInTheDocument()
+    expect(screen.getByText('Vencimento')).toBeInTheDocument()
+    expect(screen.getByText(/\d{2}\/\d{2}\/\d{4}/)).toBeInTheDocument()
+    expect(screen.getByText(/até dois dias para ser compensado/)).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Concluir' }))
+
+    await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/'))
+    expect(useCartStore.getState().items).toHaveLength(0)
+  })
+
+  it('canceling the payment dialog returns to the checkout with the cart preserved', async () => {
+    enableV2Flag()
+    const user = userEvent.setup()
+    addOfferToCart()
+
+    renderScreen(<CheckoutPage />)
+
+    await screen.findByRole('group', { name: 'Forma de pagamento' })
+    await user.click(screen.getByRole('button', { name: 'Confirmar pagamento' }))
+
+    await screen.findByText('Pagamento via Pix')
+    await user.click(screen.getByRole('button', { name: 'Cancelar' }))
+
+    expect(screen.queryByText('Pagamento via Pix')).not.toBeInTheDocument()
+    expect(pushMock).not.toHaveBeenCalled()
+    expect(useCartStore.getState().items).toHaveLength(1)
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Confirmar pagamento' })).toBeInTheDocument()
+    )
+  })
+
+  it('completed offers no longer appear in the offers list', async () => {
+    enableV2Flag()
+    const user = userEvent.setup()
+    addOfferToCart()
+
+    renderScreen(<CheckoutPage />)
+    await screen.findByRole('group', { name: 'Forma de pagamento' })
+    await user.click(screen.getByRole('button', { name: 'Confirmar pagamento' }))
+    await screen.findByText('Pagamento via Pix')
+    await user.click(screen.getByRole('button', { name: 'Concluir' }))
+
+    renderScreen(<HomePage />)
+
+    expect(
+      await screen.findByRole('button', { name: 'Adicionar ao carrinho: Acordo rápido' })
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Adicionar ao carrinho: Negocie agora' })
+    ).not.toBeInTheDocument()
+  })
+
   it('checkout API error: shows a message and keeps the cart', async () => {
     server.use(
       http.post('/api/checkout', () =>
@@ -97,12 +214,7 @@ describe('checkout flows', () => {
     )
 
     const user = userEvent.setup()
-    useCartStore.getState().add({
-      id: 'oferta-1',
-      title: 'Negocie agora',
-      originalDebt: 245000,
-      offerPrice: 98000,
-    })
+    addOfferToCart()
 
     renderScreen(<CheckoutPage />)
     await user.click(await screen.findByRole('button', { name: 'Confirmar' }))
@@ -112,6 +224,48 @@ describe('checkout flows', () => {
     expect(useCartStore.getState().items).toHaveLength(1)
   })
 
+  it('prevents duplicate submission while the checkout request is pending', async () => {
+    const response = Promise.withResolvers<Response>()
+    const handler = vi.fn(() => response.promise)
+    server.use(http.post('/api/checkout', handler))
+    const user = userEvent.setup()
+    addOfferToCart()
+    renderScreen(<CheckoutPage />)
+
+    try {
+      await user.click(await screen.findByRole('button', { name: 'Confirmar' }))
+      const pendingButton = await screen.findByRole('button', { name: checkoutContent.confirming })
+      expect(pendingButton).toBeDisabled()
+      expect(pendingButton).toHaveAttribute('aria-busy', 'true')
+      await user.keyboard('{Enter}')
+      expect(handler).toHaveBeenCalledOnce()
+    } finally {
+      response.resolve(HttpResponse.json({ agreementId: 'acordo-pending', status: 'confirmed' }))
+    }
+    await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/?checkout=sucesso'))
+  })
+
+  it('shows a generic message for non-Error failures and clears it when changing payment method', async () => {
+    enableV2Flag()
+    const user = userEvent.setup()
+    addOfferToCart()
+    renderScreen(<CheckoutPage />)
+    await screen.findByRole('button', { name: 'Confirmar pagamento' })
+    const request = vi.spyOn(api, 'apiFetch').mockRejectedValueOnce('connection interrupted')
+
+    try {
+      await user.click(screen.getByRole('button', { name: 'Confirmar pagamento' }))
+      expect(await screen.findByRole('alert')).toHaveTextContent(checkoutContent.genericError)
+      expect(useCartStore.getState().items).toHaveLength(1)
+      expect(pushMock).not.toHaveBeenCalled()
+
+      await user.click(screen.getByRole('radio', { name: /Boleto/ }))
+      await waitFor(() => expect(screen.queryByRole('alert')).not.toBeInTheDocument())
+    } finally {
+      request.mockRestore()
+    }
+  })
+
   it('flag API failure: falls back to the short flow', async () => {
     server.use(
       http.get('/api/feature-flags/checkoutV2', () =>
@@ -119,16 +273,24 @@ describe('checkout flows', () => {
       )
     )
 
-    useCartStore.getState().add({
-      id: 'oferta-2',
-      title: 'Acordo rápido',
-      originalDebt: 120000,
-      offerPrice: 72000,
-    })
+    addOfferToCart()
 
     renderScreen(<CheckoutPage />)
 
     await screen.findByRole('button', { name: 'Confirmar' })
     expect(screen.queryByRole('group', { name: 'Forma de pagamento' })).not.toBeInTheDocument()
+  })
+
+  it('cart and checkout screens return to the previous route', async () => {
+    const user = userEvent.setup()
+    addOfferToCart()
+    const cart = renderScreen(<CartPage />)
+    await user.click(screen.getByRole('button', { name: 'Voltar' }))
+    expect(backMock).toHaveBeenCalledTimes(1)
+    cart.unmount()
+
+    renderScreen(<CheckoutPage />)
+    await user.click(screen.getByRole('button', { name: 'Voltar' }))
+    expect(backMock).toHaveBeenCalledTimes(2)
   })
 })

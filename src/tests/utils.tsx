@@ -1,22 +1,21 @@
 'use client'
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react'
 import type { ReactNode } from 'react'
+import { renderHook } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
-export function createTestQueryClient() {
-  return new QueryClient({
+export const createTestQueryClient = () =>
+  new QueryClient({
     defaultOptions: { queries: { retry: false } },
   })
-}
 
-export function createWrapper(client?: QueryClient) {
+export const createWrapper = (client?: QueryClient) => {
   const queryClient = client ?? createTestQueryClient()
-  return function Wrapper({ children }: { children: ReactNode }) {
-    return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  }
+  const Wrapper = ({ children }: { children: ReactNode }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  )
+  return Wrapper
 }
 
-export function renderHookWithClient<T>(hook: () => T, client?: QueryClient) {
-  return renderHook(hook, { wrapper: createWrapper(client) })
-}
+export const renderHookWithClient = <T,>(hook: () => T, client?: QueryClient) =>
+  renderHook(hook, { wrapper: createWrapper(client) })
