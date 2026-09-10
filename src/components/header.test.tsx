@@ -1,6 +1,6 @@
 "use client";
 
-import { render, screen } from "@testing-library/react";
+import { render, screen, act } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { Header } from "@/components/header";
 import { useCartStore } from "@/store/cart";
@@ -15,7 +15,9 @@ const offer: Offer = {
 
 describe("Header", () => {
   it("shows an accessible empty-cart link when the cart is empty", () => {
-    useCartStore.getState().clear();
+    act(() => {
+      useCartStore.getState().clear();
+    });
     render(<Header />);
 
     const link = screen.getByRole("link", { name: "Carrinho vazio" });
@@ -24,8 +26,10 @@ describe("Header", () => {
   });
 
   it("announces the item count in the badge", () => {
-    useCartStore.getState().clear();
-    useCartStore.getState().add(offer);
+    act(() => {
+      useCartStore.getState().clear();
+      useCartStore.getState().add(offer);
+    });
     render(<Header />);
 
     expect(
@@ -34,6 +38,8 @@ describe("Header", () => {
       }),
     ).toBeInTheDocument();
     expect(screen.getByRole("status")).toHaveTextContent("1");
-    useCartStore.getState().clear();
+    act(() => {
+      useCartStore.getState().clear();
+    });
   });
 });
