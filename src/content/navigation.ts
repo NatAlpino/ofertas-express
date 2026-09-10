@@ -4,6 +4,8 @@ export const navigationContent = {
   cartAria: 'Carrinho',
   offers: 'Ofertas',
   cart: 'Carrinho',
+  profile: 'Perfil',
+  exit: 'Sair',
   cartBadge: (count: number) =>
     count > 0 ? `Carrinho com ${count} ${count === 1 ? 'oferta' : 'ofertas'}` : 'Carrinho vazio',
 } as const

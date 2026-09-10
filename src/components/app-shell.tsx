@@ -1,10 +1,12 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
-import { usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 
 import MenuIcon from '@mui/icons-material/Menu'
+import LogoutIcon from '@mui/icons-material/Logout'
+import PersonIcon from '@mui/icons-material/Person'
 import TagIcon from '@mui/icons-material/LocalOffer'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import {
@@ -28,13 +30,17 @@ import { cartContent } from '@/content/cart'
 import { useCartStore } from '@/stores/cart'
 import { checkoutContent } from '@/content/checkout'
 import { commonContent } from '@/content/common'
+import { profileContent } from '@/content/profile'
 import { navigationContent } from '@/content/navigation'
+import { useSessionStore } from '@/stores/session'
 
 const DRAWER_WIDTH = 240
+const LOGIN_ROUTE = '/login'
 
 const getPageTitle = (pathname: string | null) => {
   if (pathname?.startsWith('/carrinho')) return cartContent.title
   if (pathname?.startsWith('/checkout')) return checkoutContent.title
+  if (pathname?.startsWith('/perfil')) return profileContent.title
   return commonContent.appName
 }
 
@@ -53,6 +59,7 @@ const NavigationItems = ({ onNavigate }: { onNavigate?: () => void }) => {
       icon: <ShoppingCartIcon />,
       badge: count,
     },
+    { label: navigationContent.profile, href: '/perfil', icon: <PersonIcon /> },
   ]
 
   return (
@@ -84,6 +91,14 @@ const NavigationItems = ({ onNavigate }: { onNavigate?: () => void }) => {
 }
 
 const DrawerContent = ({ onNavigate }: { onNavigate?: () => void }) => {
+  const router = useRouter()
+  const logout = useSessionStore((state) => state.logout)
+
+  const handleLogout = () => {
+    logout()
+    router.push(LOGIN_ROUTE)
+  }
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Toolbar sx={{ flexDirection: 'column', alignItems: 'flex-start', gap: 0 }}>
@@ -98,6 +113,17 @@ const DrawerContent = ({ onNavigate }: { onNavigate?: () => void }) => {
       <Box sx={{ flexGrow: 1 }}>
         <NavigationItems onNavigate={onNavigate} />
       </Box>
+      <Divider />
+      <List>
+        <ListItem disablePadding>
+          <ListItemButton onClick={handleLogout} sx={{ color: 'text.secondary' }}>
+            <ListItemIcon sx={{ color: 'inherit', minWidth: 40 }}>
+              <LogoutIcon />
+            </ListItemIcon>
+            <ListItemText primary={navigationContent.exit} />
+          </ListItemButton>
+        </ListItem>
+      </List>
     </Box>
   )
 }
@@ -106,10 +132,22 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
   const [mobileOpen, setMobileOpen] = useState(false)
   const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'))
   const pathname = usePathname()
+  const router = useRouter()
   const count = useCartStore((state) => state.count)
+  const username = useSessionStore((state) => state.username)
+
+  const isLoginRoute = pathname === LOGIN_ROUTE
+
+  useEffect(() => {
+    if (!isLoginRoute && username === null) {
+      router.replace(LOGIN_ROUTE)
+    }
+  }, [isLoginRoute, username, router])
 
   const openMenu = () => setMobileOpen(true)
   const closeMenu = () => setMobileOpen(false)
+
+  if (isLoginRoute) return <>{children}</>
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh' }}>
