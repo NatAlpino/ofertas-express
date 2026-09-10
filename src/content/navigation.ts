@@ -4,6 +4,7 @@ export const navigationContent = {
   cartAria: 'Carrinho',
   offers: 'Ofertas',
   cart: 'Carrinho',
+  history: 'Histórico',
   profile: 'Perfil',
   exit: 'Sair',
   cartBadge: (count: number) =>

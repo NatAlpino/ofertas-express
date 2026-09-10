@@ -7,6 +7,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import MenuIcon from '@mui/icons-material/Menu'
 import LogoutIcon from '@mui/icons-material/Logout'
 import PersonIcon from '@mui/icons-material/Person'
+import ReceiptIcon from '@mui/icons-material/Receipt'
 import TagIcon from '@mui/icons-material/LocalOffer'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import {
@@ -30,6 +31,7 @@ import { cartContent } from '@/content/cart'
 import { useCartStore } from '@/stores/cart'
 import { checkoutContent } from '@/content/checkout'
 import { commonContent } from '@/content/common'
+import { historyContent } from '@/content/history'
 import { profileContent } from '@/content/profile'
 import { navigationContent } from '@/content/navigation'
 import { useSessionStore } from '@/stores/session'
@@ -40,6 +42,7 @@ const LOGIN_ROUTE = '/login'
 const getPageTitle = (pathname: string | null) => {
   if (pathname?.startsWith('/carrinho')) return cartContent.title
   if (pathname?.startsWith('/checkout')) return checkoutContent.title
+  if (pathname?.startsWith('/historico')) return historyContent.title
   if (pathname?.startsWith('/perfil')) return profileContent.title
   return commonContent.appName
 }
@@ -59,6 +62,7 @@ const NavigationItems = ({ onNavigate }: { onNavigate?: () => void }) => {
       icon: <ShoppingCartIcon />,
       badge: count,
     },
+    { label: navigationContent.history, href: '/historico', icon: <ReceiptIcon /> },
     { label: navigationContent.profile, href: '/perfil', icon: <PersonIcon /> },
   ]
 

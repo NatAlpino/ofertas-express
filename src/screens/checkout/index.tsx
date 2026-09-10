@@ -20,7 +20,10 @@ import { BackButton } from '@/components/back-button'
 import { formatBRL } from '@/utils/format'
 
 import { useCartStore } from '@/stores/cart'
+import { useHistoryStore } from '@/stores/history'
 import { checkoutContent } from '@/content/checkout'
+import type { HistoryMethod } from '@/stores/history'
+import { useCompletedOffersStore } from '@/stores/offers'
 import { useCheckoutFlag } from '@/hooks/use-checkout-flag'
 import { useConfirmCheckout } from '@/hooks/use-confirm-checkout'
 import type { CheckoutRequest, Offer, PaymentInstructions, PaymentMethod } from '@/types'
@@ -36,6 +39,8 @@ const buildCheckoutRequest = (
   offerIds: items.map((offer) => offer.id),
   ...(isV2 ? { paymentMethod } : {}),
 })
+
+const offerIdsOf = (items: Offer[]) => items.map((offer) => offer.id)
 
 const PaymentMethodOption = ({
   value,
@@ -66,10 +71,13 @@ export const CheckoutPage = () => {
   const count = useCartStore((state) => state.count)
   const total = useCartStore((state) => state.total)
   const clear = useCartStore((state) => state.clear)
+  const markCompleted = useCompletedOffersStore((state) => state.markCompleted)
+  const addHistory = useHistoryStore((state) => state.add)
 
   const { isPending: isFlagPending, isV2 } = useCheckoutFlag()
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('pix')
   const [instructions, setInstructions] = useState<PaymentInstructions | null>(null)
+  const [agreement, setAgreement] = useState<{ id: string; method: HistoryMethod } | null>(null)
 
   const {
     mutate: confirmCheckout,
@@ -98,8 +106,19 @@ export const CheckoutPage = () => {
   const handleCloseDialog = () => setInstructions(null)
 
   const handleConclude = () => {
+    if (agreement) {
+      addHistory({
+        id: agreement.id,
+        titles: items.map((item) => item.title),
+        total,
+        method: agreement.method,
+        paidAt: new Date().toISOString(),
+      })
+    }
+    markCompleted(offerIdsOf(items))
     clear()
     setInstructions(null)
+    setAgreement(null)
     router.push('/')
   }
 
@@ -107,9 +126,18 @@ export const CheckoutPage = () => {
     confirmCheckout(buildCheckoutRequest(items, isV2, paymentMethod), {
       onSuccess: (response) => {
         if (response.payment) {
+          setAgreement({ id: response.agreementId, method: response.payment.method })
           setInstructions(response.payment)
           return
         }
+        addHistory({
+          id: response.agreementId,
+          titles: items.map((item) => item.title),
+          total,
+          method: 'direct',
+          paidAt: new Date().toISOString(),
+        })
+        markCompleted(offerIdsOf(items))
         clear()
         router.push('/?checkout=sucesso')
       },
