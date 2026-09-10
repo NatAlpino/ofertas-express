@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { Offer } from '@/services/types'
+import type { Offer } from '@/types'
 
 interface CartState {
   items: Offer[]
@@ -12,7 +12,7 @@ interface CartState {
 
 const emptyCart = { items: [], count: 0, total: 0 }
 
-function withOffer(items: Offer[], offer: Offer) {
+const withOffer = (items: Offer[], offer: Offer) => {
   const next = [...items, offer]
   return {
     items: next,

@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
-import { Providers } from '@/components/providers'
-import { Header } from '@/components/header'
-import { MockWorkerStarter } from '@/components/mock-worker-starter'
+
+import { AppShell } from '@/components/app-shell'
+
+import { Providers } from './providers'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -11,20 +12,14 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
-  return (
-    <html lang="pt-BR">
-      <body>
-        <Providers>
-          <MockWorkerStarter />
-          <Header />
-          {children}
-        </Providers>
-      </body>
-    </html>
-  )
-}
+const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => (
+  <html lang="pt-BR">
+    <body>
+      <Providers>
+        <AppShell>{children}</AppShell>
+      </Providers>
+    </body>
+  </html>
+)
+
+export default RootLayout
