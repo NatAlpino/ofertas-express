@@ -1,19 +1,19 @@
-"use client";
+'use client'
 
-import { Suspense } from "react";
-import { useSearchParams } from "next/navigation";
-import { useOffers } from "@/services/hooks";
-import { OfferCard } from "@/components/offer-card";
+import { Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { useOffers } from '@/services/hooks'
+import { OfferCard } from '@/components/offer-card'
 
 function OffersList() {
-  const { data, isPending, isError, refetch } = useOffers();
+  const { data, isPending, isError, refetch } = useOffers()
 
   if (isPending) {
     return (
       <p role="status" className="py-16 text-center text-ink-soft">
         Carregando ofertas…
       </p>
-    );
+    )
   }
 
   if (isError) {
@@ -28,7 +28,7 @@ function OffersList() {
           Tentar novamente
         </button>
       </div>
-    );
+    )
   }
 
   return (
@@ -39,13 +39,13 @@ function OffersList() {
         </li>
       ))}
     </ul>
-  );
+  )
 }
 
 function CheckoutSuccessMessage() {
-  const searchParams = useSearchParams();
+  const searchParams = useSearchParams()
 
-  if (searchParams.get("checkout") !== "sucesso") return null;
+  if (searchParams.get('checkout') !== 'sucesso') return null
 
   return (
     <p
@@ -54,7 +54,7 @@ function CheckoutSuccessMessage() {
     >
       Acordo confirmado com sucesso!
     </p>
-  );
+  )
 }
 
 export default function Home() {
@@ -67,5 +67,5 @@ export default function Home() {
       <p className="mb-4 text-sm text-ink-soft">Renegocie com desconto</p>
       <OffersList />
     </main>
-  );
+  )
 }

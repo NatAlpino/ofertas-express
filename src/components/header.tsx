@@ -1,28 +1,24 @@
-"use client";
+'use client'
 
-import Link from "next/link";
-import { useCartStore } from "@/store/cart";
+import Link from 'next/link'
+import { useCartStore } from '@/store/cart'
 
 export function Header() {
-  const count = useCartStore((state) => state.count);
+  const count = useCartStore((state) => state.count)
 
   return (
     <header className="sticky top-0 z-10 border-b border-border bg-white">
       <div className="mx-auto flex max-w-2xl items-center justify-between px-4 py-3">
         <Link href="/" className="leading-tight">
-          <span className="block text-lg font-bold text-primary">
-            Ofertas Express
-          </span>
-          <span className="block text-xs text-ink-soft">
-            Renegocie com desconto
-          </span>
+          <span className="block text-lg font-bold text-primary">Ofertas Express</span>
+          <span className="block text-xs text-ink-soft">Renegocie com desconto</span>
         </Link>
         <Link
           href="/carrinho"
           aria-label={
             count > 0
-              ? `Carrinho com ${count} ${count === 1 ? "oferta" : "ofertas"}`
-              : "Carrinho vazio"
+              ? `Carrinho com ${count} ${count === 1 ? 'oferta' : 'ofertas'}`
+              : 'Carrinho vazio'
           }
           className="relative rounded-full p-2 text-primary hover:bg-primary-light"
         >
@@ -53,5 +49,5 @@ export function Header() {
         </Link>
       </div>
     </header>
-  );
+  )
 }

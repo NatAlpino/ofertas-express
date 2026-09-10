@@ -1,20 +1,18 @@
-"use client";
+'use client'
 
-import Link from "next/link";
-import { useCartStore } from "@/store/cart";
-import { formatBRL } from "@/utils/format";
+import Link from 'next/link'
+import { useCartStore } from '@/store/cart'
+import { formatBRL } from '@/utils/format'
 
 export default function CartPage() {
-  const items = useCartStore((state) => state.items);
-  const total = useCartStore((state) => state.total);
-  const remove = useCartStore((state) => state.remove);
+  const items = useCartStore((state) => state.items)
+  const total = useCartStore((state) => state.total)
+  const remove = useCartStore((state) => state.remove)
 
   return (
     <main className="mx-auto flex min-h-[calc(100vh-65px)] max-w-2xl flex-col px-4 py-6">
       <h1 className="mb-1 text-xl font-bold text-ink">Seu carrinho</h1>
-      <p className="mb-4 text-sm text-ink-soft">
-        Confira as ofertas que você selecionou.
-      </p>
+      <p className="mb-4 text-sm text-ink-soft">Confira as ofertas que você selecionou.</p>
 
       {items.length === 0 ? (
         <div className="py-16 text-center">
@@ -37,9 +35,7 @@ export default function CartPage() {
                 <div>
                   <p className="font-semibold text-ink">{offer.title}</p>
                   <p className="text-xs text-ink-soft">Oferta</p>
-                  <p className="text-sm font-bold text-primary">
-                    {formatBRL(offer.offerPrice)}
-                  </p>
+                  <p className="text-sm font-bold text-primary">{formatBRL(offer.offerPrice)}</p>
                 </div>
                 <button
                   type="button"
@@ -71,9 +67,7 @@ export default function CartPage() {
 
           <div className="mt-6 flex items-center justify-between">
             <span className="text-base font-semibold text-ink">Total</span>
-            <span className="text-lg font-bold text-ink">
-              {formatBRL(total)}
-            </span>
+            <span className="text-lg font-bold text-ink">{formatBRL(total)}</span>
           </div>
 
           <Link
@@ -85,5 +79,5 @@ export default function CartPage() {
         </>
       )}
     </main>
-  );
+  )
 }

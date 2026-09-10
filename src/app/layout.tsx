@@ -1,20 +1,20 @@
-import type { Metadata } from "next";
-import { Providers } from "@/components/providers";
-import { Header } from "@/components/header";
-import { MockWorkerStarter } from "@/components/mock-worker-starter";
-import "./globals.css";
+import type { Metadata } from 'next'
+import { Providers } from '@/components/providers'
+import { Header } from '@/components/header'
+import { MockWorkerStarter } from '@/components/mock-worker-starter'
+import './globals.css'
 
 export const metadata: Metadata = {
   title: {
-    default: "Ofertas Express",
-    template: "%s | Ofertas Express",
+    default: 'Ofertas Express',
+    template: '%s | Ofertas Express',
   },
-};
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
     <html lang="pt-BR">
@@ -26,5 +26,5 @@ export default function RootLayout({
         </Providers>
       </body>
     </html>
-  );
+  )
 }
