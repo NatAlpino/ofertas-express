@@ -7,6 +7,7 @@ import { theme } from '@/theme'
 import { useCartStore } from '@/stores/cart'
 import { AppShell } from '@/components/app-shell'
 import { useSessionStore } from '@/stores/session'
+import { createWrapper } from '@/tests/utils'
 import RootRoute from '@/app/page'
 
 const router = { push: vi.fn(), replace: vi.fn() }
@@ -26,7 +27,8 @@ const renderShell = () =>
       <AppShell>
         <p>Page content</p>
       </AppShell>
-    </ThemeProvider>
+    </ThemeProvider>,
+    { wrapper: createWrapper() }
   )
 
 describe('app navigation', () => {

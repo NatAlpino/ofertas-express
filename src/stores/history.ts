@@ -13,11 +13,13 @@ export interface HistoryEntry {
 interface HistoryState {
   entries: HistoryEntry[]
   add: (entry: HistoryEntry) => void
+  reset: () => void
 }
 
 export const useHistoryStore = create<HistoryState>((set) => ({
   entries: [],
   add: (entry) => set((state) => ({ entries: [entry, ...state.entries] })),
+  reset: () => set({ entries: [] }),
 }))
 
 export const sortByPaidAtDesc = (entries: HistoryEntry[]) =>

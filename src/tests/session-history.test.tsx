@@ -15,9 +15,10 @@ import HistoryRoute from '@/app/historico/page'
 import { theme } from '@/theme'
 import { server } from '@/mocks/server'
 import { useCartStore } from '@/stores/cart'
-import { createWrapper } from '@/tests/utils'
+import { createTestQueryClient, createWrapper } from '@/tests/utils'
 import { useHistoryStore } from '@/stores/history'
 import { useSessionStore } from '@/stores/session'
+import { useCompletedOffersStore } from '@/stores/offers'
 
 const pushMock = vi.fn()
 const replaceMock = vi.fn()
@@ -56,6 +57,7 @@ describe('session, route guard and history flows', () => {
     useCartStore.getState().clear()
     useSessionStore.setState({ username: null })
     useHistoryStore.setState({ entries: [] })
+    useCompletedOffersStore.setState({ completedIds: [] })
     server.use(
       http.get('/api/feature-flags/checkoutV2', () => HttpResponse.json({ enabled: false }))
     )
@@ -86,6 +88,71 @@ describe('session, route guard and history flows', () => {
 
     expect(useSessionStore.getState().username).toBeNull()
     expect(pushMock).toHaveBeenCalledWith('/login')
+  })
+
+  it('logout clears all global stores and the query cache', async () => {
+    useSessionStore.setState({ username: 'maria' })
+    addOfferToCart()
+    useHistoryStore.setState({
+      entries: [
+        {
+          id: 'acordo-1',
+          titles: ['Negocie agora'],
+          total: 98000,
+          method: 'pix',
+          paidAt: '2025-06-15T14:30:00.000Z',
+        },
+      ],
+    })
+    useCompletedOffersStore.setState({ completedIds: ['oferta-1'] })
+    const client = createTestQueryClient()
+    await client.prefetchQuery({ queryKey: ['cached'], queryFn: () => Promise.resolve(1) })
+    const user = userEvent.setup()
+
+    render(
+      <ThemeProvider theme={theme}>
+        <AppShell>
+          <HistoryRoute />
+        </AppShell>
+      </ThemeProvider>,
+      { wrapper: createWrapper(client) }
+    )
+    await user.click(screen.getAllByRole('button', { name: 'Sair' })[0])
+
+    expect(useCartStore.getState().items).toHaveLength(0)
+    expect(useCartStore.getState().count).toBe(0)
+    expect(useHistoryStore.getState().entries).toHaveLength(0)
+    expect(useCompletedOffersStore.getState().completedIds).toHaveLength(0)
+    expect(client.getQueryCache().getAll()).toHaveLength(0)
+  })
+
+  it('login clears residual state from a previous session', async () => {
+    addOfferToCart()
+    useHistoryStore.setState({
+      entries: [
+        {
+          id: 'acordo-1',
+          titles: ['Negocie agora'],
+          total: 98000,
+          method: 'direct',
+          paidAt: '2025-06-15T14:30:00.000Z',
+        },
+      ],
+    })
+    useCompletedOffersStore.setState({ completedIds: ['oferta-1'] })
+    const client = createTestQueryClient()
+    await client.prefetchQuery({ queryKey: ['cached'], queryFn: () => Promise.resolve(1) })
+    const user = userEvent.setup()
+
+    render(<LoginRoute />, { wrapper: createWrapper(client) })
+    await user.type(screen.getByLabelText('Usuário'), 'maria')
+    await user.click(screen.getByRole('button', { name: 'Entrar' }))
+
+    expect(useCartStore.getState().items).toHaveLength(0)
+    expect(useHistoryStore.getState().entries).toHaveLength(0)
+    expect(useCompletedOffersStore.getState().completedIds).toHaveLength(0)
+    expect(client.getQueryCache().getAll()).toHaveLength(0)
+    expect(useSessionStore.getState().username).toBe('maria')
   })
 
   it('route guard redirects to login when there is no active session', async () => {

@@ -3,17 +3,20 @@
 import { useState } from 'react'
 
 import { useRouter } from 'next/navigation'
+import { useQueryClient } from '@tanstack/react-query'
 import { Box, Button, Card, CardContent, Grid, TextField, Typography } from '@mui/material'
 
-import { commonContent } from '@/content/common'
 import { loginContent } from '@/content/login'
+import { commonContent } from '@/content/common'
 
+import { resetAllStores } from '@/stores'
 import { useSessionStore } from '@/stores/session'
 
 import { loginPageStyles } from './style'
 
 export const LoginPage = () => {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const login = useSessionStore((state) => state.login)
   const [username, setUsername] = useState('')
 
@@ -23,6 +26,8 @@ export const LoginPage = () => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+    resetAllStores()
+    queryClient.clear()
     login(username)
     router.push('/home')
   }

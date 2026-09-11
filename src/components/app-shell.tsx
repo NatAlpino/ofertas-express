@@ -4,37 +4,40 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 
+import { useQueryClient } from '@tanstack/react-query'
+
 import MenuIcon from '@mui/icons-material/Menu'
 import LogoutIcon from '@mui/icons-material/Logout'
 import PersonIcon from '@mui/icons-material/Person'
-import ReceiptIcon from '@mui/icons-material/Receipt'
 import TagIcon from '@mui/icons-material/LocalOffer'
+import ReceiptIcon from '@mui/icons-material/Receipt'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import {
-  Badge,
   Box,
-  Divider,
-  Drawer,
-  IconButton,
   List,
+  Badge,
+  Drawer,
+  Divider,
+  Toolbar,
   ListItem,
-  ListItemButton,
+  IconButton,
+  Typography,
   ListItemIcon,
   ListItemText,
-  Toolbar,
-  Typography,
   useMediaQuery,
+  ListItemButton,
 } from '@mui/material'
 import type { Theme } from '@mui/material'
 
+import { resetAllStores } from '@/stores'
 import { cartContent } from '@/content/cart'
 import { useCartStore } from '@/stores/cart'
-import { checkoutContent } from '@/content/checkout'
 import { commonContent } from '@/content/common'
+import { useSessionStore } from '@/stores/session'
 import { historyContent } from '@/content/history'
 import { profileContent } from '@/content/profile'
+import { checkoutContent } from '@/content/checkout'
 import { navigationContent } from '@/content/navigation'
-import { useSessionStore } from '@/stores/session'
 
 const DRAWER_WIDTH = 240
 const LOGIN_ROUTE = '/login'
@@ -96,9 +99,12 @@ const NavigationItems = ({ onNavigate }: { onNavigate?: () => void }) => {
 
 const DrawerContent = ({ onNavigate }: { onNavigate?: () => void }) => {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const logout = useSessionStore((state) => state.logout)
 
   const handleLogout = () => {
+    resetAllStores()
+    queryClient.clear()
     logout()
     router.push(LOGIN_ROUTE)
   }
