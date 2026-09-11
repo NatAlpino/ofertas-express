@@ -7,6 +7,7 @@ export const checkoutPageStyles = {
     py: { xs: 3, md: 4 },
   },
   pageHeader: { mb: 3, mt: 1 },
+  pageTitle: { fontWeight: 700 },
   pageSubtitle: { color: 'text.secondary', mt: 0.5 },
   summaryCard: { p: 2, mb: 3 },
   summaryRow: {
@@ -14,6 +15,8 @@ export const checkoutPageStyles = {
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  summaryCount: { fontWeight: 600 },
+  summaryTotal: { fontWeight: 700 },
   paymentFieldset: {
     border: 1,
     borderColor: 'divider',

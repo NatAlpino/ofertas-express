@@ -1,7 +1,5 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import {
   Box,
   Card,
@@ -14,22 +12,22 @@ import {
   FormControlLabel,
   CircularProgress,
 } from '@mui/material'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 import { BackButton } from '@/components/back-button'
-
-import { formatBRL } from '@/utils/format'
-
-import { useCartStore } from '@/stores/cart'
-import { useHistoryStore } from '@/stores/history'
 import { checkoutContent } from '@/content/checkout'
-import type { HistoryMethod } from '@/stores/history'
-import { useCompletedOffersStore } from '@/stores/offers'
 import { useCheckoutFlag } from '@/hooks/use-checkout-flag'
 import { useConfirmCheckout } from '@/hooks/use-confirm-checkout'
+import { useCartStore } from '@/stores/cart'
+import type { HistoryMethod } from '@/stores/history'
+import { useHistoryStore } from '@/stores/history'
+import { useCompletedOffersStore } from '@/stores/offers'
 import type { CheckoutRequest, Offer, PaymentInstructions, PaymentMethod } from '@/types'
+import { formatBRL } from '@/utils/format'
 
-import { checkoutPageStyles } from './style'
 import { PaymentInstructionsDialog } from './payment-instructions-dialog'
+import { checkoutPageStyles } from './style'
 
 const buildCheckoutRequest = (
   items: Offer[],
@@ -93,13 +91,10 @@ export const CheckoutPage = () => {
     if (isEmpty) router.replace('/carrinho')
   }, [isEmpty, router])
 
-  useEffect(() => {
-    reset()
-  }, [paymentMethod, reset])
-
   if (isEmpty) return null
 
   const handlePaymentMethodChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    reset()
     setPaymentMethod(event.target.value as PaymentMethod)
   }
 
@@ -149,7 +144,7 @@ export const CheckoutPage = () => {
       <Grid size={{ xs: 12, md: 10, lg: 8 }}>
         <BackButton />
         <Box component="header" sx={checkoutPageStyles.pageHeader}>
-          <Typography component="h1" variant="h5" sx={{ fontWeight: 700 }}>
+          <Typography component="h1" variant="h5" sx={checkoutPageStyles.pageTitle}>
             {checkoutContent.title}
           </Typography>
           <Typography variant="body2" sx={checkoutPageStyles.pageSubtitle}>
@@ -162,7 +157,7 @@ export const CheckoutPage = () => {
             <Typography variant="body2" color="text.secondary">
               {checkoutContent.selectedLabel}
             </Typography>
-            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+            <Typography variant="body2" sx={checkoutPageStyles.summaryCount}>
               {count}
             </Typography>
           </Box>
@@ -170,7 +165,7 @@ export const CheckoutPage = () => {
             <Typography variant="body2" color="text.secondary">
               {checkoutContent.totalLabel}
             </Typography>
-            <Typography variant="body1" sx={{ fontWeight: 700 }}>
+            <Typography variant="body1" sx={checkoutPageStyles.summaryTotal}>
               {formatBRL(total)}
             </Typography>
           </Box>
