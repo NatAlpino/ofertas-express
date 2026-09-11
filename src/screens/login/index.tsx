@@ -1,14 +1,13 @@
 'use client'
 
+import { Box, Button, Card, CardContent, Grid, TextField, Typography } from '@mui/material'
+import { useQueryClient } from '@tanstack/react-query'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-import { useRouter } from 'next/navigation'
-import { useQueryClient } from '@tanstack/react-query'
-import { Box, Button, Card, CardContent, Grid, TextField, Typography } from '@mui/material'
 
-import { loginContent } from '@/content/login'
 import { commonContent } from '@/content/common'
-
+import { loginContent } from '@/content/login'
 import { resetAllStores } from '@/stores'
 import { useSessionStore } from '@/stores/session'
 
@@ -26,9 +25,11 @@ export const LoginPage = () => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+    const name = username.trim()
+    if (!name) return
     resetAllStores()
     queryClient.clear()
-    login(username)
+    login(name)
     router.push('/home')
   }
 
@@ -48,6 +49,7 @@ export const LoginPage = () => {
             <Box component="form" onSubmit={handleSubmit} sx={loginPageStyles.cardContent}>
               <TextField
                 fullWidth
+                required
                 autoComplete="username"
                 label={loginContent.userLabel}
                 value={username}
