@@ -18,7 +18,15 @@ export default defineConfig([
         'error',
         {
           groups: ['builtin', 'external', 'internal', ['parent', 'sibling', 'index']],
-          pathGroups: [{ pattern: '@/**', group: 'internal' }],
+          pathGroups: [
+            { pattern: '@/components/**', group: 'internal', position: 'before' },
+            { pattern: '@/hooks/**', group: 'internal', position: 'before' },
+            { pattern: '@/content/**', group: 'internal', position: 'before' },
+            { pattern: '@/mocks/**', group: 'internal', position: 'before' },
+            { pattern: '@/utils/**', group: 'internal', position: 'before' },
+            { pattern: '@/stores/**', group: 'internal', position: 'before' },
+            { pattern: '@/**', group: 'internal' },
+          ],
           'newlines-between': 'always',
           alphabetize: { order: 'asc', caseInsensitive: true },
         },
