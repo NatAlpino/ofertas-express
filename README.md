@@ -71,7 +71,7 @@ As principais rotas simuladas incluem ofertas, feature flag e checkout.
 
 O comportamento do checkout é controlado pela feature flag `checkoutV2`, que vem **habilitada por padrão**, e os mocks do MSW permitem simular falhas da API — tudo configurável pelo terminal, sem alterar código.
 
-O arquivo [`.env.example`](./.env.example) reúne as variáveis disponíveis com a descrição de cada uma. Para usar ajuste o valor o valor da CHECKOUT_V2 e descomente as outras duas:
+O arquivo [`.env.example`](./.env.example) reúne as variáveis disponíveis com a descrição de cada uma. Para usar ajuste o valor da CHECKOUT_V2 e descomente as outras duas:
 
 - `NEXT_PUBLIC_CHECKOUT_V2=false` — desliga o fluxo novo (Pix/boleto) e exibe o fluxo antigo de confirmação direta;
 - `NEXT_PUBLIC_MOCK_OFFERS_ERROR=500` — o `GET /api/offers` passa a responder com o erro, e a home exibe o estado de falha com botão de tentar novamente;
