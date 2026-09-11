@@ -24,7 +24,7 @@ describe('cart interactions', () => {
 
     await user.click(screen.getByRole('button', { name: 'Remover Acordo rápido' }))
     expect(useCartStore.getState()).toMatchObject({ count: 0, total: 0 })
-    expect(screen.getByRole('link', { name: /ofertas/i })).toHaveAttribute('href', '/')
+    expect(screen.getByRole('link', { name: /ofertas/i })).toHaveAttribute('href', '/home')
     expect(screen.queryByRole('link', { name: /checkout/i })).not.toBeInTheDocument()
   })
 })

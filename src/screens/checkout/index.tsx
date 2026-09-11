@@ -119,7 +119,7 @@ export const CheckoutPage = () => {
     clear()
     setInstructions(null)
     setAgreement(null)
-    router.push('/')
+    router.push('/home')
   }
 
   const handleConfirm = () => {

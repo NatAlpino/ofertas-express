@@ -1,5 +1,5 @@
-import { HomePage } from '@/screens/home'
+import { redirect } from 'next/navigation'
 
-const HomeRoute = () => <HomePage />
+const RootRoute = () => redirect('/home')
 
-export default HomeRoute
+export default RootRoute

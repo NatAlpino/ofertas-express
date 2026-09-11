@@ -25,7 +25,7 @@ const methodLabel = (method: HistoryMethod) => {
 const EmptyHistory = () => (
   <Stack spacing={2} sx={historyPageStyles.emptyState}>
     <Typography>{historyContent.empty}</Typography>
-    <Button component={Link} href="/" variant="outlined">
+    <Button component={Link} href="/home" variant="outlined">
       {historyContent.emptyCta}
     </Button>
   </Stack>

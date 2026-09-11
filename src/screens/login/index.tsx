@@ -24,7 +24,7 @@ export const LoginPage = () => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     login(username)
-    router.push('/')
+    router.push('/home')
   }
 
   return (

@@ -12,11 +12,21 @@ const backButtonStyles = {
   px: 0,
 }
 
+const canGoBack = () => (window.history.state?.idx ?? 0) > 0
+
 export const BackButton = () => {
   const router = useRouter()
 
+  const handleBack = () => {
+    if (canGoBack()) {
+      router.back()
+    } else {
+      router.push('/home')
+    }
+  }
+
   return (
-    <Button startIcon={<ArrowBackIcon />} onClick={() => router.back()} sx={backButtonStyles}>
+    <Button startIcon={<ArrowBackIcon />} onClick={handleBack} sx={backButtonStyles}>
       {commonContent.back}
     </Button>
   )

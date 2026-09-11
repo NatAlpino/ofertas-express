@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen, within } from '@testing-library/react'
 
-import HomePage from '@/app/page'
+import HomePage from '@/app/home/page'
 import { offers } from '@/mocks/data'
 import { server } from '@/mocks/server'
 import { useCartStore } from '@/stores/cart'

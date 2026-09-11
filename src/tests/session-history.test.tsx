@@ -23,7 +23,7 @@ const pushMock = vi.fn()
 const replaceMock = vi.fn()
 const backMock = vi.fn()
 
-let mockPathname = '/'
+let mockPathname = '/home'
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: pushMock, replace: replaceMock, back: backMock }),
@@ -52,7 +52,7 @@ describe('session, route guard and history flows', () => {
     pushMock.mockClear()
     replaceMock.mockClear()
     backMock.mockClear()
-    mockPathname = '/'
+    mockPathname = '/home'
     useCartStore.getState().clear()
     useSessionStore.setState({ username: null })
     useHistoryStore.setState({ entries: [] })
@@ -70,7 +70,7 @@ describe('session, route guard and history flows', () => {
     await user.click(screen.getByRole('button', { name: 'Entrar' }))
 
     expect(useSessionStore.getState().username).toBe('maria')
-    expect(pushMock).toHaveBeenCalledWith('/')
+    expect(pushMock).toHaveBeenCalledWith('/home')
   })
 
   it('logout clears the session and goes back to the login screen', async () => {

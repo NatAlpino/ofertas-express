@@ -7,13 +7,17 @@ import { theme } from '@/theme'
 import { useCartStore } from '@/stores/cart'
 import { AppShell } from '@/components/app-shell'
 import { useSessionStore } from '@/stores/session'
+import RootRoute from '@/app/page'
 
 const router = { push: vi.fn(), replace: vi.fn() }
-let pathname: string | null = '/'
+let pathname: string | null = '/home'
 
 vi.mock('next/navigation', () => ({
   useRouter: () => router,
   usePathname: () => pathname,
+  redirect: (href: string) => {
+    throw new Error(`Redirect: ${href}`)
+  },
 }))
 
 const renderShell = () =>
@@ -26,9 +30,13 @@ const renderShell = () =>
   )
 
 describe('app navigation', () => {
+  it('redirects the root route to home', () => {
+    expect(() => RootRoute()).toThrow('Redirect: /home')
+  })
+
   beforeEach(() => {
     vi.clearAllMocks()
-    pathname = '/'
+    pathname = '/home'
     useCartStore.getState().clear()
     useSessionStore.setState({ username: 'maria' })
   })
@@ -70,6 +78,7 @@ describe('app navigation', () => {
 
     expect(screen.getByRole('link', { name: label })).toHaveAttribute('href', '/carrinho')
     expect(screen.getByRole('link', { name: 'Ofertas' })).toHaveClass('Mui-selected')
+    expect(screen.getByRole('link', { name: 'Ofertas' })).toHaveAttribute('href', '/home')
     expect(screen.getByRole('status')).toHaveTextContent(count ? String(count) : '')
   })
 

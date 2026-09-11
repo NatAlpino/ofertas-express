@@ -48,14 +48,14 @@ const getPageTitle = (pathname: string | null) => {
 }
 
 const isRouteActive = (pathname: string | null, href: string) =>
-  href === '/' ? pathname === '/' : pathname?.startsWith(href) === true
+  href === '/home' ? pathname === '/home' : pathname?.startsWith(href) === true
 
 const NavigationItems = ({ onNavigate }: { onNavigate?: () => void }) => {
   const pathname = usePathname()
   const count = useCartStore((state) => state.count)
 
   const items = [
-    { label: navigationContent.offers, href: '/', icon: <TagIcon /> },
+    { label: navigationContent.offers, href: '/home', icon: <TagIcon /> },
     {
       label: navigationContent.cart,
       href: '/carrinho',

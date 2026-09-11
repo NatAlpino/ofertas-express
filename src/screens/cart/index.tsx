@@ -16,7 +16,7 @@ import { cartPageStyles } from './style'
 const EmptyCart = () => (
   <Stack spacing={2} sx={cartPageStyles.emptyState}>
     <Typography>{cartContent.empty}</Typography>
-    <Button component={Link} href="/" variant="outlined">
+    <Button component={Link} href="/home" variant="outlined">
       {cartContent.emptyCta}
     </Button>
   </Stack>

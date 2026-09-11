@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 
-import HomePage from '@/app/page'
+import HomePage from '@/app/home/page'
 import * as api from '@/services/api'
 import { server } from '@/mocks/server'
 import CartPage from '@/app/carrinho/page'
@@ -28,7 +28,7 @@ const mockClipboard = () => {
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: pushMock, replace: replaceMock, back: backMock }),
-  usePathname: () => '/',
+  usePathname: () => '/home',
   useSearchParams: () => new URLSearchParams(),
 }))
 
@@ -134,7 +134,7 @@ describe('checkout flows', () => {
 
     await user.click(screen.getByRole('button', { name: 'Concluir' }))
 
-    await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/'))
+    await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/home'))
     expect(useCartStore.getState().items).toHaveLength(0)
     expect(useCompletedOffersStore.getState().completedIds).toContain('oferta-1')
   })
@@ -160,7 +160,7 @@ describe('checkout flows', () => {
 
     await user.click(screen.getByRole('button', { name: 'Concluir' }))
 
-    await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/'))
+    await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/home'))
     expect(useCartStore.getState().items).toHaveLength(0)
   })
 
@@ -282,6 +282,7 @@ describe('checkout flows', () => {
   })
 
   it('cart and checkout screens return to the previous route', async () => {
+    window.history.replaceState({ idx: 1 }, '')
     const user = userEvent.setup()
     addOfferToCart()
     const cart = renderScreen(<CartPage />)
@@ -292,5 +293,17 @@ describe('checkout flows', () => {
     renderScreen(<CheckoutPage />)
     await user.click(screen.getByRole('button', { name: 'Voltar' }))
     expect(backMock).toHaveBeenCalledTimes(2)
+  })
+
+  it('back button falls back to the offers list when there is no internal history', async () => {
+    window.history.replaceState(null, '')
+    const user = userEvent.setup()
+    addOfferToCart()
+
+    renderScreen(<CartPage />)
+    await user.click(screen.getByRole('button', { name: 'Voltar' }))
+
+    expect(backMock).not.toHaveBeenCalled()
+    expect(pushMock).toHaveBeenCalledWith('/home')
   })
 })
