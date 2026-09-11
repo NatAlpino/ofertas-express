@@ -25,5 +25,8 @@ export const apiFetch = async <T>(url: string, init?: RequestInit): Promise<T> =
     throw new ApiError(response.status, message)
   }
 
+  const contentType = response.headers.get('content-type') ?? ''
+  if (!contentType.includes('application/json')) return undefined as T
+
   return (await response.json()) as T
 }

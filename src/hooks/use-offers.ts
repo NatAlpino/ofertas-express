@@ -2,12 +2,11 @@
 
 import { useQuery } from '@tanstack/react-query'
 
-import type { Offer } from '@/types'
-
 import { apiFetch } from '@/services/api'
+import { parseOffers } from '@/services/contracts'
 
 export const useOffers = () =>
   useQuery({
     queryKey: ['offers'],
-    queryFn: () => apiFetch<Offer[]>('/api/offers'),
+    queryFn: async () => parseOffers(await apiFetch<unknown>('/api/offers')),
   })
