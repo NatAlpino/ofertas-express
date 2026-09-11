@@ -90,7 +90,7 @@ npm run dev
 | Rota         | Descrição                           |
 | ------------ | ----------------------------------- |
 | `/login`     | Login demonstrativo                 |
-| `/`          | Lista de ofertas disponíveis        |
+| `/home`      | Lista de ofertas disponíveis        |
 | `/carrinho`  | Ofertas selecionadas                |
 | `/checkout`  | Confirmação e finalização do acordo |
 | `/historico` | Histórico de acordos concluídos     |
