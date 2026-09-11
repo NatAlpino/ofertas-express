@@ -1,9 +1,12 @@
 'use client'
 
 import { setupWorker } from 'msw/browser'
+
 import { handlers } from '@/mocks/handlers'
 
+let startPromise: Promise<unknown> | undefined
+
 export const startMockWorker = () => {
-  const worker = setupWorker(...handlers)
-  return worker.start({ onUnhandledRequest: 'bypass' })
+  startPromise ??= setupWorker(...handlers).start({ onUnhandledRequest: 'bypass' })
+  return startPromise
 }
