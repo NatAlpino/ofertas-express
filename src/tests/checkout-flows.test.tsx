@@ -1,18 +1,19 @@
-import { http, HttpResponse } from 'msw'
-import userEvent from '@testing-library/user-event'
-import { describe, expect, it, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { http, HttpResponse } from 'msw'
+import { describe, expect, it, vi, beforeEach } from 'vitest'
 
-import HomePage from '@/app/home/page'
-import * as api from '@/services/api'
-import { server } from '@/mocks/server'
 import CartPage from '@/app/carrinho/page'
-import { useCartStore } from '@/stores/cart'
-import { createWrapper } from '@/tests/utils'
 import CheckoutPage from '@/app/checkout/page'
-import { useHistoryStore } from '@/stores/history'
+import HomePage from '@/app/home/page'
 import { checkoutContent } from '@/content/checkout'
+import { server } from '@/mocks/server'
+import * as api from '@/services/api'
+import { useCartStore } from '@/stores/cart'
+import { useHistoryStore } from '@/stores/history'
 import { useCompletedOffersStore } from '@/stores/offers'
+import { createWrapper } from '@/tests/utils'
+import { formatDate } from '@/utils/format'
 
 const pushMock = vi.fn()
 const replaceMock = vi.fn()
@@ -150,12 +151,19 @@ describe('checkout flows', () => {
     await user.click(screen.getByRole('radio', { name: /Boleto/ }))
     await user.click(screen.getByRole('button', { name: 'Confirmar pagamento' }))
 
+    const expectedDue = new Date()
+    let remaining = 3
+    while (remaining > 0) {
+      expectedDue.setDate(expectedDue.getDate() + 1)
+      if (expectedDue.getDay() !== 0 && expectedDue.getDay() !== 6) remaining--
+    }
+
     expect(await screen.findByText('Pagamento via boleto')).toBeInTheDocument()
     expect(
       screen.getByText('23793.38128 60007.827136 95000.063305 1 99010000015500')
     ).toBeInTheDocument()
     expect(screen.getByText('Vencimento')).toBeInTheDocument()
-    expect(screen.getByText(/\d{2}\/\d{2}\/\d{4}/)).toBeInTheDocument()
+    expect(screen.getByText(formatDate(expectedDue.toISOString()))).toBeInTheDocument()
     expect(screen.getByText(/até dois dias para ser compensado/)).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'Concluir' }))
@@ -183,6 +191,41 @@ describe('checkout flows', () => {
     await waitFor(() =>
       expect(screen.getByRole('button', { name: 'Confirmar pagamento' })).toBeInTheDocument()
     )
+  })
+
+  it('re-submitting the same checkout replays the same agreement (idempotency)', async () => {
+    enableV2Flag()
+    const user = userEvent.setup()
+    addOfferToCart()
+
+    const responses: { agreementId: string }[] = []
+    const captureResponse = async ({ request, response }: { request: Request; response: Response }) => {
+      if (request.method === 'POST' && request.url.includes('/api/checkout')) {
+        responses.push(await response.clone().json())
+      }
+    }
+    server.events.on('response:mocked', captureResponse)
+
+    try {
+      renderScreen(<CheckoutPage />)
+
+      await screen.findByRole('group', { name: 'Forma de pagamento' })
+      await user.click(screen.getByRole('button', { name: 'Confirmar pagamento' }))
+      await screen.findByText('Pagamento via Pix')
+      await user.click(screen.getByRole('button', { name: 'Cancelar' }))
+      await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+
+      await user.click(screen.getByRole('button', { name: 'Confirmar pagamento' }))
+      await screen.findByText('Pagamento via Pix')
+      await user.click(screen.getByRole('button', { name: 'Concluir' }))
+
+      expect(responses).toHaveLength(2)
+      expect(responses[1].agreementId).toBe(responses[0].agreementId)
+      expect(useHistoryStore.getState().entries).toHaveLength(1)
+      expect(useHistoryStore.getState().entries[0].id).toBe(responses[0].agreementId)
+    } finally {
+      server.events.removeListener('response:mocked', captureResponse)
+    }
   })
 
   it('completed offers no longer appear in the offers list', async () => {
