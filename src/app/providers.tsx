@@ -1,20 +1,18 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { ThemeProvider } from '@mui/material'
 import CssBaseline from '@mui/material/CssBaseline'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { useEffect, useState } from 'react'
 
 import { startMockWorker } from '@/mocks/browser'
-import { exposeFlagToggle } from '@/mocks/flag-toggle'
 
 import { theme } from '@/theme'
 
-const startWorkerInDev = (queryClient: QueryClient) => {
+const startWorkerInDev = () => {
   if (process.env.NODE_ENV === 'development') {
     startMockWorker()
-    exposeFlagToggle(queryClient)
   }
 }
 
@@ -28,7 +26,7 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
       })
   )
 
-  useEffect(() => startWorkerInDev(queryClient), [queryClient])
+  useEffect(() => startWorkerInDev(), [])
 
   return (
     <AppRouterCacheProvider>

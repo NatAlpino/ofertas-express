@@ -45,9 +45,22 @@ export const resetIdempotencyStore = () => {
 
 export const CHECKOUT_V2_FLAG_KEY = 'flag:checkoutV2'
 
+export const setCheckoutV2Override = (enabled: boolean | null) => {
+  if (enabled === null) {
+    window.localStorage.removeItem(CHECKOUT_V2_FLAG_KEY)
+    return
+  }
+  window.localStorage.setItem(CHECKOUT_V2_FLAG_KEY, String(enabled))
+}
+
+const checkoutV2EnvDefault = () => {
+  const value = process.env.NEXT_PUBLIC_CHECKOUT_V2
+  return value === undefined || value.trim().toLowerCase() !== 'false'
+}
+
 const checkoutV2Enabled = () => {
   const override = window.localStorage.getItem(CHECKOUT_V2_FLAG_KEY)
-  return override ? override === 'true' : true
+  return override ? override === 'true' : checkoutV2EnvDefault()
 }
 
 export const handlers = [

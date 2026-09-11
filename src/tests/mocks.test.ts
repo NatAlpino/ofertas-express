@@ -1,11 +1,12 @@
-import { QueryClient } from '@tanstack/react-query'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { exposeFlagToggle, setCheckoutV2Override } from '@/mocks/flag-toggle'
-import { CHECKOUT_V2_FLAG_KEY } from '@/mocks/handlers'
+import { CHECKOUT_V2_FLAG_KEY, setCheckoutV2Override } from '@/mocks/handlers'
 
 describe('msw mock server', () => {
-  afterEach(() => window.localStorage.clear())
+  afterEach(() => {
+    window.localStorage.clear()
+    vi.unstubAllEnvs()
+  })
 
   it('enables checkout V2 by default', async () => {
     const response = await fetch('/api/feature-flags/checkoutV2')
@@ -58,14 +59,33 @@ describe('msw mock server', () => {
     expect(window.localStorage.getItem(CHECKOUT_V2_FLAG_KEY)).toBeNull()
   })
 
-  it('window.setCheckoutV2 stores the override and invalidates the flag query', () => {
-    const client = new QueryClient()
-    const invalidate = vi.spyOn(client, 'invalidateQueries').mockResolvedValue(undefined)
-    exposeFlagToggle(client)
+  it.each([
+    ['true', true],
+    ['TRUE', true],
+    [' false ', false],
+    ['FALSE', false],
+  ])('uses the env default %s for the checkout flag', async (value, expected) => {
+    vi.stubEnv('NEXT_PUBLIC_CHECKOUT_V2', value)
 
-    window.setCheckoutV2?.(false)
+    const response = await fetch('/api/feature-flags/checkoutV2')
 
-    expect(window.localStorage.getItem(CHECKOUT_V2_FLAG_KEY)).toBe('false')
-    expect(invalidate).toHaveBeenCalledWith({ queryKey: ['feature-flags', 'checkoutV2'] })
+    expect(await response.json()).toEqual({ enabled: expected })
+  })
+
+  it('treats the env default as enabled when unset', async () => {
+    vi.unstubAllEnvs()
+
+    const response = await fetch('/api/feature-flags/checkoutV2')
+
+    expect(await response.json()).toEqual({ enabled: true })
+  })
+
+  it('prefers the localStorage override over the env default', async () => {
+    vi.stubEnv('NEXT_PUBLIC_CHECKOUT_V2', 'false')
+    window.localStorage.setItem(CHECKOUT_V2_FLAG_KEY, 'true')
+
+    const response = await fetch('/api/feature-flags/checkoutV2')
+
+    expect(await response.json()).toEqual({ enabled: true })
   })
 })
