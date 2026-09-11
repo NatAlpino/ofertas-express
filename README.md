@@ -69,21 +69,20 @@ As principais rotas simuladas incluem ofertas, feature flag e checkout.
 
 ### Variáveis de ambiente para testes manuais
 
-O comportamento do checkout é controlado pela feature flag `checkoutV2`, que vem **habilitada por padrão**, e os mocks do MSW permitem simular falhas da API — tudo configurável pelo terminal, sem alterar código.
+O comportamento do checkout é controlado pela feature flag `checkoutV2`, que vem **habilitada por padrão**, e os mocks do MSW permitem simular falhas da API.
 
-O arquivo [`.env.example`](./.env.example) reúne as variáveis disponíveis com a descrição de cada uma. Para usar ajuste o valor o valor da CHECKOUT_V2 e descomente as outras duas:
+O arquivo [`.env.example`](./.env.example) reúne as variáveis disponíveis com a descrição de cada uma.
 
 - `NEXT_PUBLIC_CHECKOUT_V2=false` — desliga o fluxo novo (Pix/boleto) e exibe o fluxo antigo de confirmação direta;
 - `NEXT_PUBLIC_MOCK_OFFERS_ERROR=500` — o `GET /api/offers` passa a responder com o erro, e a home exibe o estado de falha com botão de tentar novamente;
 - `NEXT_PUBLIC_MOCK_CHECKOUT_ERROR=500` — o `POST /api/checkout` passa a responder com o erro, e o checkout exibe o `Alert` "Erro ao confirmar o acordo. Tente novamente mais tarde." mantendo o carrinho intacto.
 
 Defina apenas o que deseja testar. Como as variáveis são `NEXT_PUBLIC_*`, é necessário **reiniciar o servidor** a cada mudança:
+Para voltar ao fluxo normal sem erros, comente todas as envs novamente.
 
 ```bash
 npm run dev
 ```
-
-Para voltar ao comportamento padrão, remova a variável do `.env.local` e reinicie o servidor.
 
 ## Rotas
 
