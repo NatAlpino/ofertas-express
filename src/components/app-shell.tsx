@@ -1,15 +1,11 @@
 'use client'
 
-import Link from 'next/link'
-import { useEffect, useState } from 'react'
-import { usePathname, useRouter } from 'next/navigation'
 
-import { useQueryClient } from '@tanstack/react-query'
 
-import MenuIcon from '@mui/icons-material/Menu'
-import LogoutIcon from '@mui/icons-material/Logout'
-import PersonIcon from '@mui/icons-material/Person'
 import TagIcon from '@mui/icons-material/LocalOffer'
+import LogoutIcon from '@mui/icons-material/Logout'
+import MenuIcon from '@mui/icons-material/Menu'
+import PersonIcon from '@mui/icons-material/Person'
 import ReceiptIcon from '@mui/icons-material/Receipt'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import {
@@ -27,20 +23,63 @@ import {
   useMediaQuery,
   ListItemButton,
 } from '@mui/material'
-import type { Theme } from '@mui/material'
+import type { SxProps, Theme } from '@mui/material'
+import { useQueryClient } from '@tanstack/react-query'
+import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
-import { resetAllStores } from '@/stores'
 import { cartContent } from '@/content/cart'
-import { useCartStore } from '@/stores/cart'
-import { commonContent } from '@/content/common'
-import { useSessionStore } from '@/stores/session'
-import { historyContent } from '@/content/history'
-import { profileContent } from '@/content/profile'
 import { checkoutContent } from '@/content/checkout'
+import { commonContent } from '@/content/common'
+import { historyContent } from '@/content/history'
 import { navigationContent } from '@/content/navigation'
+import { profileContent } from '@/content/profile'
+import { resetAllStores } from '@/stores'
+import { useCartStore } from '@/stores/cart'
+import { useSessionStore } from '@/stores/session'
 
 const DRAWER_WIDTH = 240
 const LOGIN_ROUTE = '/login'
+
+const appShellStyles = {
+  navButton: { '&.Mui-selected': { bgcolor: 'primary.light' } },
+  navIcon: { color: 'primary.main', minWidth: 40 },
+  drawerRoot: { display: 'flex', flexDirection: 'column', height: '100%' },
+  drawerToolbar: { flexDirection: 'column', alignItems: 'flex-start', gap: 0 },
+  drawerTitle: { fontWeight: 700 },
+  drawerNav: { flexGrow: 1 },
+  logoutButton: { color: 'text.secondary' },
+  logoutIcon: { color: 'inherit', minWidth: 40 },
+  root: { display: 'flex', minHeight: '100vh' },
+  appHeader: {
+    position: 'fixed',
+    top: 0,
+    right: 0,
+    left: { xs: 0, md: `${DRAWER_WIDTH}px` },
+    zIndex: (muiTheme: Theme) => muiTheme.zIndex.drawer + 1,
+    bgcolor: 'background.paper',
+    borderBottom: 1,
+    borderColor: 'divider',
+  },
+  appToolbar: { gap: 1 },
+  appTitle: { flexGrow: 1, fontWeight: 700 },
+  cartButton: { color: 'primary.main' },
+  navWrapper: { width: { md: DRAWER_WIDTH }, flexShrink: { md: 0 } },
+  drawerMobile: {
+    display: { xs: 'block', md: 'none' },
+    '& .MuiDrawer-paper': { width: DRAWER_WIDTH },
+  },
+  drawerPermanent: {
+    display: { xs: 'none', md: 'block' },
+    '& .MuiDrawer-paper': { width: DRAWER_WIDTH, boxSizing: 'border-box' },
+  },
+  main: {
+    flexGrow: 1,
+    width: { md: `calc(100% - ${DRAWER_WIDTH}px)` },
+    pt: '64px',
+  },
+} satisfies Record<string, SxProps<Theme>>
 
 const getPageTitle = (pathname: string | null) => {
   if (pathname?.startsWith('/carrinho')) return cartContent.title
@@ -78,9 +117,9 @@ const NavigationItems = ({ onNavigate }: { onNavigate?: () => void }) => {
             href={item.href}
             selected={isRouteActive(pathname, item.href)}
             onClick={onNavigate}
-            sx={{ '&.Mui-selected': { bgcolor: 'primary.light' } }}
+            sx={appShellStyles.navButton}
           >
-            <ListItemIcon sx={{ color: 'primary.main', minWidth: 40 }}>
+            <ListItemIcon sx={appShellStyles.navIcon}>
               {item.badge !== undefined && item.badge > 0 ? (
                 <Badge badgeContent={item.badge} color="primary">
                   {item.icon}
@@ -110,9 +149,9 @@ const DrawerContent = ({ onNavigate }: { onNavigate?: () => void }) => {
   }
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <Toolbar sx={{ flexDirection: 'column', alignItems: 'flex-start', gap: 0 }}>
-        <Typography variant="h6" color="primary" sx={{ fontWeight: 700 }}>
+    <Box sx={appShellStyles.drawerRoot}>
+      <Toolbar sx={appShellStyles.drawerToolbar}>
+        <Typography variant="h6" color="primary" sx={appShellStyles.drawerTitle}>
           {commonContent.appName}
         </Typography>
         <Typography variant="caption" color="text.secondary">
@@ -120,14 +159,14 @@ const DrawerContent = ({ onNavigate }: { onNavigate?: () => void }) => {
         </Typography>
       </Toolbar>
       <Divider />
-      <Box sx={{ flexGrow: 1 }}>
+      <Box sx={appShellStyles.drawerNav}>
         <NavigationItems onNavigate={onNavigate} />
       </Box>
       <Divider />
       <List>
         <ListItem disablePadding>
-          <ListItemButton onClick={handleLogout} sx={{ color: 'text.secondary' }}>
-            <ListItemIcon sx={{ color: 'inherit', minWidth: 40 }}>
+          <ListItemButton onClick={handleLogout} sx={appShellStyles.logoutButton}>
+            <ListItemIcon sx={appShellStyles.logoutIcon}>
               <LogoutIcon />
             </ListItemIcon>
             <ListItemText primary={navigationContent.exit} />
@@ -160,21 +199,9 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
   if (isLoginRoute) return <>{children}</>
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
-      <Box
-        component="header"
-        sx={{
-          position: 'fixed',
-          top: 0,
-          right: 0,
-          left: { xs: 0, md: `${DRAWER_WIDTH}px` },
-          zIndex: (muiTheme) => muiTheme.zIndex.drawer + 1,
-          bgcolor: 'background.paper',
-          borderBottom: 1,
-          borderColor: 'divider',
-        }}
-      >
-        <Toolbar sx={{ gap: 1 }}>
+    <Box sx={appShellStyles.root}>
+      <Box component="header" sx={appShellStyles.appHeader}>
+        <Toolbar sx={appShellStyles.appToolbar}>
           {isMobile && (
             <IconButton
               edge="start"
@@ -184,14 +211,14 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
               <MenuIcon />
             </IconButton>
           )}
-          <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700 }}>
+          <Typography variant="h6" sx={appShellStyles.appTitle}>
             {getPageTitle(pathname)}
           </Typography>
           <IconButton
             component={Link}
             href="/carrinho"
             aria-label={navigationContent.cartBadge(count)}
-            sx={{ color: 'primary.main' }}
+            sx={appShellStyles.cartButton}
           >
             <Badge
               badgeContent={count > 0 ? count : undefined}
@@ -205,39 +232,22 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
         </Toolbar>
       </Box>
 
-      <Box component="nav" sx={{ width: { md: DRAWER_WIDTH }, flexShrink: { md: 0 } }}>
+      <Box component="nav" sx={appShellStyles.navWrapper}>
         <Drawer
           variant="temporary"
           open={mobileOpen}
           onClose={closeMenu}
           ModalProps={{ keepMounted: true }}
-          sx={{
-            display: { xs: 'block', md: 'none' },
-            '& .MuiDrawer-paper': { width: DRAWER_WIDTH },
-          }}
+          sx={appShellStyles.drawerMobile}
         >
           <DrawerContent onNavigate={closeMenu} />
         </Drawer>
-        <Drawer
-          variant="permanent"
-          open
-          sx={{
-            display: { xs: 'none', md: 'block' },
-            '& .MuiDrawer-paper': { width: DRAWER_WIDTH, boxSizing: 'border-box' },
-          }}
-        >
+        <Drawer variant="permanent" open sx={appShellStyles.drawerPermanent}>
           <DrawerContent />
         </Drawer>
       </Box>
 
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          width: { md: `calc(100% - ${DRAWER_WIDTH}px)` },
-          pt: '64px',
-        }}
-      >
+      <Box component="main" sx={appShellStyles.main}>
         {children}
       </Box>
     </Box>
