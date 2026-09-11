@@ -1,14 +1,14 @@
 'use client'
 
-import { Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
 import { Alert, Box, Button, CircularProgress, Grid, Typography } from '@mui/material'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { Suspense, useEffect } from 'react'
 
-import type { Offer } from '@/types'
-import { useOffers } from '@/hooks/use-offers'
-import { offersContent } from '@/content/offers'
 import { commonContent } from '@/content/common'
+import { offersContent } from '@/content/offers'
+import { useOffers } from '@/hooks/use-offers'
 import { useCompletedOffersStore } from '@/stores/offers'
+import type { Offer } from '@/types'
 
 import { OfferCard } from './offer-card'
 import { offersPageStyles } from './style'
@@ -16,13 +16,19 @@ import { offersPageStyles } from './style'
 const isSuccessCheckout = (searchParams: URLSearchParams | null) =>
   searchParams?.get('checkout') === 'sucesso'
 
-const visibleOffers = (offers: Offer[], completedIds: string[]) =>
-  offers.filter((offer) => !completedIds.includes(offer.id))
+export const visibleOffers = (offers: Offer[] | undefined, completedIds: string[]) =>
+  (offers ?? []).filter((offer) => !completedIds.includes(offer.id))
 
 const CheckoutSuccessMessage = () => {
+  const router = useRouter()
   const searchParams = useSearchParams()
+  const isSuccess = isSuccessCheckout(searchParams)
 
-  if (!isSuccessCheckout(searchParams)) return null
+  useEffect(() => {
+    if (isSuccess) router.replace('/home')
+  }, [isSuccess, router])
+
+  if (!isSuccess) return null
 
   return (
     <Alert severity="success" role="status" sx={offersPageStyles.successAlert}>
@@ -53,7 +59,7 @@ const OffersError = ({ onRetry }: OffersErrorProps) => (
 
 const OffersEmpty = () => (
   <Box role="status" sx={offersPageStyles.stateBox}>
-    <Typography sx={{ fontWeight: 600 }}>{offersContent.emptyTitle}</Typography>
+    <Typography sx={offersPageStyles.emptyTitle}>{offersContent.emptyTitle}</Typography>
   </Box>
 )
 
@@ -64,7 +70,7 @@ const OffersList = () => {
   if (isPending) return <OffersLoading />
   if (isError) return <OffersError onRetry={refetch} />
 
-  const offers = visibleOffers(data ?? [], completedIds)
+  const offers = visibleOffers(data, completedIds)
   if (offers.length === 0) return <OffersEmpty />
 
   return (
@@ -85,7 +91,7 @@ export const HomePage = () => (
         <CheckoutSuccessMessage />
       </Suspense>
       <Box component="header" sx={offersPageStyles.pageHeader}>
-        <Typography component="h1" variant="h5" sx={{ fontWeight: 700 }}>
+        <Typography component="h1" variant="h5" sx={offersPageStyles.pageTitle}>
           {offersContent.title}
         </Typography>
         <Typography variant="body2" sx={offersPageStyles.pageSubtitle}>
