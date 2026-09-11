@@ -1,8 +1,8 @@
 'use client'
 
-import { Alert, Box, Button, CircularProgress, Grid, Typography } from '@mui/material'
-import { useRouter, useSearchParams } from 'next/navigation'
 import { Suspense, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { Alert, Box, Button, CircularProgress, Grid, Typography } from '@mui/material'
 
 import { useOffers } from '@/hooks/use-offers'
 

@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { exposeFlagToggle, setCheckoutV2Override } from '@/mocks/flag-toggle'
 import { CHECKOUT_V2_FLAG_KEY } from '@/mocks/handlers'
+
 describe('msw mock server', () => {
   afterEach(() => window.localStorage.clear())
 

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
-import type { HistoryEntry } from '@/stores/history'
 import { sortByPaidAtDesc } from '@/stores/history'
+import type { HistoryEntry } from '@/stores/history'
 
 const entry = (overrides: Partial<HistoryEntry>): HistoryEntry => ({
   id: 'acordo-1',

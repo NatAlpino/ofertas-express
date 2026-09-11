@@ -25,14 +25,14 @@ import { checkoutContent } from '@/content/checkout'
 import { formatBRL } from '@/utils/format'
 
 import { useCartStore } from '@/stores/cart'
-import type { HistoryMethod } from '@/stores/history'
 import { useHistoryStore } from '@/stores/history'
+import type { HistoryMethod } from '@/stores/history'
 import { useCompletedOffersStore } from '@/stores/offers'
 
 import type { CheckoutRequest, Offer, PaymentInstructions, PaymentMethod } from '@/types'
 
-import { PaymentInstructionsDialog } from './payment-instructions-dialog'
 import { checkoutPageStyles } from './style'
+import { PaymentInstructionsDialog } from './payment-instructions-dialog'
 
 const buildCheckoutRequest = (
   items: Offer[],

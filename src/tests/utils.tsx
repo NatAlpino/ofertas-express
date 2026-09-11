@@ -1,8 +1,8 @@
 'use client'
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react'
 import type { ReactNode } from 'react'
+import { renderHook } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 export const createTestQueryClient = () =>
   new QueryClient({

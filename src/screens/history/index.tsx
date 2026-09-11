@@ -1,13 +1,12 @@
 'use client'
 
-
 import { Box, Button, Card, Grid, Stack, Typography } from '@mui/material'
 import Link from 'next/link'
 
 import { BackButton } from '@/components/back-button'
 
-import { checkoutContent } from '@/content/checkout'
 import { historyContent } from '@/content/history'
+import { checkoutContent } from '@/content/checkout'
 
 import { formatBRL, formatDate } from '@/utils/format'
 
