@@ -1,76 +1,233 @@
 # Ofertas Express
 
-Aplicação de renegociação de dívidas com desconto: o usuário entra por uma tela de login visual (qualquer usuário e senha), visualiza uma lista de ofertas, adiciona-as a um carrinho e fecha um acordo em um checkout que muda de comportamento conforme uma _feature flag_ (`checkoutV2`) — com finalização por Pix (QR code) ou boleto. O menu lateral dá acesso ainda ao histórico de acordos pagos e a um perfil simples.
+Aplicação frontend para visualização e renegociação de dívidas com desconto.
 
-## Documentação
+O fluxo permite realizar um login demonstrativo, visualizar ofertas disponíveis, adicioná-las ao carrinho e concluir um acordo. O comportamento do checkout é controlado pela feature flag `checkoutV2` e, quando habilitada, permite finalizar o pagamento por Pix ou boleto.
 
-- **[Decisões de arquitetura](docs/decisions.md)** — por que o projeto está organizado assim (camadas, telas, conteúdo, tema, pagamento), explicado em português e em primeira pessoa.
-- **[Como subir, testar e cuidar do código](docs/running-and-testing.md)** — comandos de dev, testes, lint, formatação e checklist antes de commitar.
+A aplicação também conta com histórico de acordos concluídos, perfil do usuário e navegação responsiva.
 
-## Como rodar
+## Tecnologias
 
-Pré-requisitos: Node.js 20+ e npm.
+- **Next.js 16** com App Router
+- **React 19**
+- **TypeScript**
+- **Material UI**
+- **TanStack React Query**
+- **Zustand**
+- **MSW (Mock Service Worker)**
+- **Vitest**
+- **Testing Library**
+- **ESLint**
+- **Prettier**
+
+## Pré-requisitos
+
+Para executar o projeto localmente é necessário ter:
+
+- Node.js 20+
+- npm
+
+## Instalação
+
+Clone o repositório e instale as dependências:
 
 ```bash
-npm install     # instala as dependências
-npm run dev     # sobe o app em http://localhost:3000
-npm run build   # gera a versão de produção (type check incluído)
-npm start       # serve a versão de produção
+npm install
 ```
 
-Não é necessário nenhum backend: em desenvolvimento a API é simulada no navegador pelo [MSW](https://mswjs.io) (service worker gerado em `public/mockServiceWorker.js`).
+## Executando a aplicação
 
-## Como executar os testes
+Inicie o ambiente de desenvolvimento:
 
 ```bash
-npm test              # roda a suíte uma vez (Vitest, jsdom, Testing Library + MSW)
-npm run test:watch    # modo observação
-npm run test:coverage # com cobertura
+npm run dev
 ```
 
-Nos testes o MSW roda em Node e intercepta as mesmas rotas da API simulada. A suíte cobre os fluxos de checkout (flag desligada, flag ligada com Pix e boleto, cancelamento do modal, erro de API e fallback da flag), a gravação do histórico de acordos, o login/logout e a guarda de rotas, o carrinho e os stores Zustand, a formatação de moeda/data e o cliente HTTP. O guia [Como subir, testar e cuidar do código](docs/running-and-testing.md) ainda ensina a rodar partes da suíte e a **simular erros** (nos testes e no navegador).
+A aplicação estará disponível em:
+
+`http://localhost:3000`
+
+O primeiro acesso direciona para a tela de login.
+
+O login é demonstrativo e não possui autenticação real. Qualquer combinação de usuário e senha permite acessar a aplicação.
+
+### API simulada
+
+Não é necessário executar um backend.
+
+Durante o desenvolvimento, as chamadas para a API são interceptadas pelo **MSW (Mock Service Worker)** e respondidas localmente.
+
+O service worker necessário já está disponível em:
+
+```text
+public/mockServiceWorker.js
+```
+
+As principais rotas simuladas incluem ofertas, feature flag e checkout.
+
+> O MSW é iniciado apenas no ambiente de desenvolvimento e nos testes. Ao executar a aplicação em modo de produção com `npm start`, é necessário um backend real para responder às requisições.
+
+## Rotas
+
+| Rota         | Descrição                           |
+| ------------ | ----------------------------------- |
+| `/login`     | Login demonstrativo                 |
+| `/`          | Lista de ofertas disponíveis        |
+| `/carrinho`  | Ofertas selecionadas                |
+| `/checkout`  | Confirmação e finalização do acordo |
+| `/historico` | Histórico de acordos concluídos     |
+| `/perfil`    | Informações do usuário              |
+
+As rotas internas são protegidas pela sessão demonstrativa. Sem uma sessão ativa, o usuário é redirecionado para `/login`.
+
+## Build de produção
+
+Para gerar a versão de produção:
+
+```bash
+npm run build
+```
+
+Para executar o build:
+
+```bash
+npm start
+```
+
+O processo de build também realiza a validação de tipos do projeto.
+
+## Testes
+
+A suíte de testes utiliza **Vitest**, **Testing Library**, **jsdom** e **MSW em Node**.
+
+Para executar todos os testes:
+
+```bash
+npm test
+```
+
+Durante o desenvolvimento:
+
+```bash
+npm run test:watch
+```
+
+Para gerar o relatório de cobertura:
+
+```bash
+npm run test:coverage
+```
+
+Também é possível executar um arquivo específico:
+
+```bash
+npx vitest run src/tests/session-history.test.tsx
+```
+
+Ou filtrar um cenário pelo nome:
+
+```bash
+npx vitest run -t "short checkout records"
+```
+
+### Principais cenários cobertos
+
+A suíte valida, entre outros comportamentos:
+
+- checkout com a feature flag habilitada e desabilitada;
+- pagamento por Pix e boleto;
+- cancelamento da finalização do pagamento;
+- erros da API e fallback da feature flag;
+- gravação do histórico de acordos;
+- login, logout e proteção das rotas;
+- limpeza do estado entre sessões;
+- remoção de ofertas já concluídas;
+- carrinho e stores Zustand;
+- formatação de moeda e data;
+- cliente HTTP e tratamento de erros.
+
+## Simulação de erros
+
+O MSW permite substituir a resposta de uma rota durante um teste utilizando `server.use(...)`.
+
+Isso permite validar cenários como erro no checkout ou indisponibilidade do serviço de feature flags sem alterar a implementação da aplicação.
+
+No navegador também é possível validar o comportamento diante de uma falha de conexão:
+
+1. Execute a aplicação com `npm run dev`.
+2. Abra o DevTools do navegador.
+3. Acesse a aba **Network**.
+4. Altere a conexão para **Offline**.
+5. Execute novamente o fluxo desejado.
+
+A aplicação possui tratamento para evitar que falhas nas requisições deixem o usuário preso em um estado inconsistente.
 
 ## Qualidade de código
 
+O projeto possui scripts para lint e formatação:
+
 ```bash
-npm run lint          # ESLint (deve sair zerado)
-npm run lint:fix      # corrige o que for automaticamente corrigível
-npm run format        # Prettier
+npm run lint
+npm run lint:fix
+npm run format
 npm run format:check
 ```
 
-## Especificação da stack
+O Prettier está configurado para utilizar:
 
-| Camada           | Escolha                  | Por quê                                                                                                        |
-| ---------------- | ------------------------ | -------------------------------------------------------------------------------------------------------------- |
-| Framework        | Next.js 16 (App Router)  | Rotas por tela (`/`, `/carrinho`, `/checkout`), layouts compartilhados e direção atual do ecossistema          |
-| Linguagem        | TypeScript               | Tipagem de ponta a ponta, do modelo de dados aos componentes                                                   |
-| UI               | React 19 + Material UI 9 | Componentes acessíveis e responsivos prontos (Drawer, Dialog, Grid), fiéis aos mockups                         |
-| Dados da API     | TanStack React Query     | Cache, estados de loading/erro e retries centralizados para ofertas, flag e checkout                           |
-| Estado global    | Zustand                  | Carrinho, ofertas concluídas, sessão e histórico — estado simples, sem boilerplate, acessível de qualquer tela |
-| Simulação de API | MSW                      | Os mesmos mocks no desenvolvimento (service worker) e nos testes (Node)                                        |
-| Testes           | Vitest + Testing Library | Testes de comportamento escritos do ponto de vista do usuário                                                  |
+- aspas simples;
+- ausência de ponto e vírgula;
+- largura máxima de 100 caracteres.
+
+Antes de um commit, a validação completa pode ser executada com:
+
+```bash
+npm run lint && npm test && npm run build && npm run format:check
+```
 
 ## Estrutura do projeto
 
-```
+```text
 src/
-  app/            # só o Next.js: rotas (adapters finos), layout, metadata, providers
-  screens/        # telas: home (/), cart (/carrinho), checkout (/checkout), login (/login), history (/historico), profile (/perfil)
-  components/     # reutilizáveis: app-shell (menu lateral + cabeçalho) e back-button
-  content/        # todos os textos da interface, em português, por contexto
-  hooks/          # integração com React Query (ofertas, flag, confirmação)
-  services/       # cliente HTTP tipado (apiFetch, ApiError)
-  stores/         # estado global Zustand (carrinho, ofertas concluídas, sessão, histórico)
-  types/          # contratos compartilhados (oferta, pagamento, checkout)
-  utils/          # formatação de moeda e data (pt-BR)
-  theme/          # tema do Material UI — única fonte de cor e tipografia
-  mocks/          # dados e handlers do MSW (dev e testes)
-  tests/          # configuração do Vitest e testes de fluxo
+├── app/          # rotas, layout, metadata e providers do Next.js
+├── screens/      # composição das telas da aplicação
+├── components/   # componentes reutilizáveis
+├── content/      # textos exibidos na interface
+├── hooks/        # integração da aplicação com React Query
+├── services/     # comunicação HTTP e tratamento de erros
+├── stores/       # estado global com Zustand
+├── types/        # contratos e tipos compartilhados
+├── utils/        # funções utilitárias
+├── theme/        # configuração visual do Material UI
+├── mocks/        # dados e handlers do MSW
+└── tests/        # configuração e testes da aplicação
 ```
+
+Mantive `src/app` focado nas responsabilidades do App Router e concentrei a composição das telas em `src/screens`.
+
+Os detalhes e motivos dessa e de outras decisões estão documentados em [`TECHNICAL_DECISIONS.md`](./TECHNICAL_DECISIONS.md).
+
+## Responsividade
+
+A navegação se adapta ao tamanho da viewport.
+
+Em telas maiores, o menu lateral permanece visível. Abaixo do breakpoint `md` do Material UI (`900px`), a navegação passa a ser acessada por um menu hambúrguer.
+
+Para uma validação visual rápida, o **Toggle device toolbar** do DevTools pode ser utilizado para alternar entre diferentes dimensões de tela.
 
 ## Limitações conhecidas
 
-- Carrinho, ofertas concluídas, sessão e histórico não sobrevivem a um refresh da página (estado de sessão apenas; o Zustand facilita adicionar persistência depois).
-- O login é propositalmente sem validação — qualquer usuário e senha entram (telas de demonstração, não autenticação real).
-- Em produção (`npm start`) o MSW não roda — sem um backend real, o app não tem de onde buscar os dados.
+O projeto foi desenvolvido como uma aplicação demonstrativa para o desafio técnico. Por isso, algumas decisões foram mantidas deliberadamente dentro desse escopo:
+
+- o login não realiza autenticação real;
+- carrinho, sessão, histórico e ofertas concluídas são mantidos em memória e não persistem após um refresh;
+- o perfil utiliza informações fictícias derivadas do usuário informado no login;
+- o MSW é utilizado somente em desenvolvimento e nos testes;
+- não existe backend real para o ambiente de produção.
+
+Esses pontos foram mantidos como decisões de escopo, evitando adicionar complexidade que não era necessária para demonstrar os fluxos propostos.
+
+## Decisões técnicas
+
+A arquitetura, as escolhas de bibliotecas, a organização das responsabilidades, o gerenciamento de estado, o uso da feature flag, a estratégia de mocks e os principais trade-offs estão documentados em:
+[`TECHNICAL_DECISIONS.md`](./TECHNICAL_DECISIONS.md)
