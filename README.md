@@ -77,7 +77,8 @@ O arquivo [`.env.example`](./.env.example) reúne as variáveis disponíveis com
 - `NEXT_PUBLIC_MOCK_OFFERS_ERROR=500` — o `GET /api/offers` passa a responder com o erro, e a home exibe o estado de falha com botão de tentar novamente;
 - `NEXT_PUBLIC_MOCK_CHECKOUT_ERROR=500` — o `POST /api/checkout` passa a responder com o erro, e o checkout exibe o `Alert` "Erro ao confirmar o acordo. Tente novamente mais tarde." mantendo o carrinho intacto.
 
-Defina apenas o que deseja testar. Como as variáveis são `NEXT_PUBLIC_*`, é necessário **reiniciar o servidor** a cada mudança:
+Defina apenas o que deseja testar. Como as variáveis são `NEXT_PUBLIC_*`, é necessário **reiniciar o servidor** a cada mudança.
+
 Para voltar ao fluxo normal sem erros, comente todas as envs novamente.
 
 ```bash
