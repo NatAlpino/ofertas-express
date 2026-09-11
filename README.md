@@ -67,6 +67,24 @@ As principais rotas simuladas incluem ofertas, feature flag e checkout.
 
 > O MSW é iniciado apenas no ambiente de desenvolvimento e nos testes. Ao executar a aplicação em modo de produção com `npm start`, é necessário um backend real para responder às requisições.
 
+### Variáveis de ambiente para testes manuais
+
+O comportamento do checkout é controlado pela feature flag `checkoutV2`, que vem **habilitada por padrão**, e os mocks do MSW permitem simular falhas da API — tudo configurável pelo terminal, sem alterar código.
+
+O arquivo [`.env.example`](./.env.example) reúne as variáveis disponíveis com a descrição de cada uma. Para usar ajuste o valor o valor da CHECKOUT_V2 e descomente as outras duas:
+
+- `NEXT_PUBLIC_CHECKOUT_V2=false` — desliga o fluxo novo (Pix/boleto) e exibe o fluxo antigo de confirmação direta;
+- `NEXT_PUBLIC_MOCK_OFFERS_ERROR=500` — o `GET /api/offers` passa a responder com o erro, e a home exibe o estado de falha com botão de tentar novamente;
+- `NEXT_PUBLIC_MOCK_CHECKOUT_ERROR=500` — o `POST /api/checkout` passa a responder com o erro, e o checkout exibe o `Alert` "Erro ao confirmar o acordo. Tente novamente mais tarde." mantendo o carrinho intacto.
+
+Defina apenas o que deseja testar. Como as variáveis são `NEXT_PUBLIC_*`, é necessário **reiniciar o servidor** a cada mudança:
+
+```bash
+npm run dev
+```
+
+Para voltar ao comportamento padrão, remova a variável do `.env.local` e reinicie o servidor.
+
 ## Rotas
 
 | Rota         | Descrição                           |
@@ -148,19 +166,9 @@ A suíte valida, entre outros comportamentos:
 
 ## Simulação de erros
 
-O MSW permite substituir a resposta de uma rota durante um teste utilizando `server.use(...)`.
+Para testar o tratamento de erro das telas (home e checkout), utilize as variáveis `NEXT_PUBLIC_MOCK_OFFERS_ERROR` e `NEXT_PUBLIC_MOCK_CHECKOUT_ERROR` descritas em [Variáveis de ambiente para testes manuais](#variáveis-de-ambiente-para-testes-manuais).
 
-Isso permite validar cenários como erro no checkout ou indisponibilidade do serviço de feature flags sem alterar a implementação da aplicação.
-
-No navegador também é possível validar o comportamento diante de uma falha de conexão:
-
-1. Execute a aplicação com `npm run dev`.
-2. Abra o DevTools do navegador.
-3. Acesse a aba **Network**.
-4. Altere a conexão para **Offline**.
-5. Execute novamente o fluxo desejado.
-
-A aplicação possui tratamento para evitar que falhas nas requisições deixem o usuário preso em um estado inconsistente.
+Nos testes automatizados, o MSW permite substituir a resposta de uma rota com `server.use(...)`, o que viabiliza cenários como erro no checkout ou indisponibilidade do serviço de feature flags.
 
 ## Qualidade de código
 
@@ -231,3 +239,4 @@ Esses pontos foram mantidos como decisões de escopo, evitando adicionar complex
 
 A arquitetura, as escolhas de bibliotecas, a organização das responsabilidades, o gerenciamento de estado, o uso da feature flag, a estratégia de mocks e os principais trade-offs estão documentados em:
 [`TECHNICAL_DECISIONS.md`](./TECHNICAL_DECISIONS.md)
+
