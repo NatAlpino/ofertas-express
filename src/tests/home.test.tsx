@@ -1,21 +1,17 @@
-
 import { http, HttpResponse } from 'msw'
-import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-
+import { render, screen, within } from '@testing-library/react'
 
 import { offers } from '@/mocks/data'
 import { server } from '@/mocks/server'
 
-
 import { useCartStore } from '@/stores/cart'
 import { useCompletedOffersStore } from '@/stores/offers'
 
-
 import HomePage from '@/app/home/page'
-import { visibleOffers } from '@/screens/home'
 import { createWrapper } from '@/tests/utils'
+import { visibleOffers } from '@/screens/home'
 
 const replaceMock = vi.fn()
 let searchParams: URLSearchParams | null

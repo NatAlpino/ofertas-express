@@ -1,27 +1,24 @@
 import { http, HttpResponse } from 'msw'
 import { ThemeProvider } from '@mui/material'
-import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi, beforeEach } from 'vitest'
-
+import { render, screen, waitFor } from '@testing-library/react'
 
 import { AppShell } from '@/components/app-shell'
 
-
 import { server } from '@/mocks/server'
-
 
 import { useCartStore } from '@/stores/cart'
 import { useHistoryStore } from '@/stores/history'
-import { useCompletedOffersStore } from '@/stores/offers'
 import { useSessionStore } from '@/stores/session'
+import { useCompletedOffersStore } from '@/stores/offers'
 
-import CheckoutRoute from '@/app/checkout/page'
-import HistoryRoute from '@/app/historico/page'
+import { theme } from '@/theme'
 import LoginRoute from '@/app/login/page'
 import ProfileRoute from '@/app/perfil/page'
+import HistoryRoute from '@/app/historico/page'
+import CheckoutRoute from '@/app/checkout/page'
 import { createTestQueryClient, createWrapper } from '@/tests/utils'
-import { theme } from '@/theme'
 
 const pushMock = vi.fn()
 const replaceMock = vi.fn()

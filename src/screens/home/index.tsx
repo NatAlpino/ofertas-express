@@ -1,23 +1,17 @@
 'use client'
 
-
-import { Alert, Box, Button, CircularProgress, Grid, Typography } from '@mui/material'
-import { useRouter, useSearchParams } from 'next/navigation'
 import { Suspense, useEffect } from 'react'
-
+import { useRouter, useSearchParams } from 'next/navigation'
+import { Alert, Box, Button, CircularProgress, Grid, Typography } from '@mui/material'
 
 import { useOffers } from '@/hooks/use-offers'
-
 
 import { commonContent } from '@/content/common'
 import { offersContent } from '@/content/offers'
 
-
 import { useCompletedOffersStore } from '@/stores/offers'
 
-
 import type { Offer } from '@/types'
-
 
 import { OfferCard } from './offer-card'
 import { offersPageStyles } from './style'

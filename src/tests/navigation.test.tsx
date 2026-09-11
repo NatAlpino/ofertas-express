@@ -1,6 +1,6 @@
 import { ThemeProvider } from '@mui/material'
-import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AppShell } from '@/components/app-shell'
@@ -9,9 +9,9 @@ import { BackButton } from '@/components/back-button'
 import { useCartStore } from '@/stores/cart'
 import { useSessionStore } from '@/stores/session'
 
+import { theme } from '@/theme'
 import RootRoute from '@/app/page'
 import { createWrapper } from '@/tests/utils'
-import { theme } from '@/theme'
 
 const router = { push: vi.fn(), replace: vi.fn(), back: vi.fn() }
 let pathname: string | null = '/home'

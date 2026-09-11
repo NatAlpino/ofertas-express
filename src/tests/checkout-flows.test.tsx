@@ -1,30 +1,23 @@
-
 import { http, HttpResponse } from 'msw'
-import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi, beforeEach } from 'vitest'
-
+import { render, screen, waitFor } from '@testing-library/react'
 
 import { checkoutContent } from '@/content/checkout'
 
-
 import { server } from '@/mocks/server'
 
-
 import { formatDate } from '@/utils/format'
-
 
 import { useCartStore } from '@/stores/cart'
 import { useHistoryStore } from '@/stores/history'
 import { useCompletedOffersStore } from '@/stores/offers'
 
-
-import CartPage from '@/app/carrinho/page'
-import CheckoutPage from '@/app/checkout/page'
-import HomePage from '@/app/home/page'
 import * as api from '@/services/api'
+import HomePage from '@/app/home/page'
+import CartPage from '@/app/carrinho/page'
 import { createWrapper } from '@/tests/utils'
-
+import CheckoutPage from '@/app/checkout/page'
 
 const pushMock = vi.fn()
 const replaceMock = vi.fn()
@@ -210,7 +203,13 @@ describe('checkout flows', () => {
     addOfferToCart()
 
     const responses: { agreementId: string }[] = []
-    const captureResponse = async ({ request, response }: { request: Request; response: Response }) => {
+    const captureResponse = async ({
+      request,
+      response,
+    }: {
+      request: Request
+      response: Response
+    }) => {
       if (request.method === 'POST' && request.url.includes('/api/checkout')) {
         responses.push(await response.clone().json())
       }

@@ -1,14 +1,12 @@
 'use client'
 
-
-
-import TagIcon from '@mui/icons-material/LocalOffer'
-import LogoutIcon from '@mui/icons-material/Logout'
 import MenuIcon from '@mui/icons-material/Menu'
+import LogoutIcon from '@mui/icons-material/Logout'
+import type { SxProps, Theme } from '@mui/material'
 import PersonIcon from '@mui/icons-material/Person'
+import TagIcon from '@mui/icons-material/LocalOffer'
 import ReceiptIcon from '@mui/icons-material/Receipt'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
-import type { SxProps, Theme } from '@mui/material'
 import {
   Box,
   List,
@@ -25,22 +23,19 @@ import {
   ListItemButton,
 } from '@mui/material'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-
+import { usePathname, useRouter } from 'next/navigation'
 
 import { cartContent } from '@/content/cart'
-import { checkoutContent } from '@/content/checkout'
 import { commonContent } from '@/content/common'
 import { historyContent } from '@/content/history'
-import { navigationContent } from '@/content/navigation'
 import { profileContent } from '@/content/profile'
-
+import { checkoutContent } from '@/content/checkout'
+import { navigationContent } from '@/content/navigation'
 
 import { useCartStore } from '@/stores/cart'
 import { useSessionStore } from '@/stores/session'
-
 
 import { resetAllStores } from '@/stores'
 

@@ -2,10 +2,9 @@
 
 import { useMutation } from '@tanstack/react-query'
 
-
 import { apiFetch } from '@/services/api'
-import { parseCheckoutResponse } from '@/services/contracts'
 import type { CheckoutRequest } from '@/types'
+import { parseCheckoutResponse } from '@/services/contracts'
 
 export const buildIdempotencyKey = ({ offerIds, paymentMethod }: CheckoutRequest) =>
   `${offerIds.join(',')}|${paymentMethod ?? 'direct'}`
