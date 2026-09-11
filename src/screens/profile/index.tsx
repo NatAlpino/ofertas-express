@@ -3,9 +3,7 @@
 import { Avatar, Box, Card, Grid, Typography } from '@mui/material'
 
 import { BackButton } from '@/components/back-button'
-
 import { profileContent } from '@/content/profile'
-
 import { useSessionStore } from '@/stores/session'
 
 import { profilePageStyles } from './style'

@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+
 import type { Offer } from '@/types'
 
 interface CartState {

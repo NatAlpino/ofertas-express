@@ -1,15 +1,13 @@
 'use client'
 
-import Link from 'next/link'
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import { Box, Button, Card, Grid, IconButton, Stack, Typography } from '@mui/material'
+import Link from 'next/link'
 
 import { BackButton } from '@/components/back-button'
-
-import { formatBRL } from '@/utils/format'
-
 import { cartContent } from '@/content/cart'
 import { useCartStore } from '@/stores/cart'
+import { formatBRL } from '@/utils/format'
 
 import { cartPageStyles } from './style'
 

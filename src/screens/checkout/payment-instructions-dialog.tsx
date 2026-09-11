@@ -1,7 +1,5 @@
 'use client'
 
-import { useState } from 'react'
-import QRCode from 'react-qr-code'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import {
   Box,
@@ -13,15 +11,17 @@ import {
   IconButton,
   Typography,
 } from '@mui/material'
+import { useState } from 'react'
+import QRCode from 'react-qr-code'
 
-import { formatDate } from '@/utils/format'
-
+import { paymentContent } from '@/content/payment'
 import type {
   BoletoPaymentInstructions,
   PaymentInstructions,
   PixPaymentInstructions,
 } from '@/types'
-import { paymentContent } from '@/content/payment'
+import { formatDate } from '@/utils/format'
+
 
 import { checkoutPageStyles } from './style'
 

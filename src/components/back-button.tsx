@@ -1,8 +1,8 @@
 'use client'
 
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { Button } from '@mui/material'
 import { useRouter } from 'next/navigation'
-import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 
 import { commonContent } from '@/content/common'
 

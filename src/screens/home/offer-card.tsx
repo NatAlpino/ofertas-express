@@ -2,11 +2,11 @@
 
 import { Box, Button, Card, CardContent, Chip, Stack, Typography } from '@mui/material'
 
+import { offersContent } from '@/content/offers'
+import { useCartStore } from '@/stores/cart'
+import type { Offer } from '@/types'
 import { discountPercent, formatBRL } from '@/utils/format'
 
-import type { Offer } from '@/types'
-import { useCartStore } from '@/stores/cart'
-import { offersContent } from '@/content/offers'
 
 import { offersPageStyles } from './style'
 
