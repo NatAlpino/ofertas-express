@@ -7,5 +7,4 @@ export const historyContent = {
   dateLabel: 'Data',
   methodLabel: 'Forma de pagamento',
   directMethod: 'Acordo direto',
-  totalLabel: 'Total',
 } as const

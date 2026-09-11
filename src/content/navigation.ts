@@ -1,6 +1,5 @@
 export const navigationContent = {
   menuButtonAria: 'Abrir menu',
-  closeMenuAria: 'Fechar menu',
   cartAria: 'Carrinho',
   offers: 'Ofertas',
   cart: 'Carrinho',

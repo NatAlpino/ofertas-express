@@ -1,7 +1,6 @@
 export const checkoutContent = {
   title: 'Confirmar acordo',
   subtitle: 'Revise os detalhes e confirme para seguir.',
-  backAria: 'Voltar para o carrinho',
   selectedLabel: 'Ofertas selecionadas',
   totalLabel: 'Total do acordo',
   flagPending: 'Carregando checkout…',
