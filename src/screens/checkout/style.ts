@@ -1,0 +1,58 @@
+import type { SxProps, Theme } from '@mui/material'
+
+export const checkoutPageStyles = {
+  pageContainer: {
+    justifyContent: 'center',
+    px: { xs: 2, md: 3 },
+    py: { xs: 3, md: 4 },
+  },
+  pageHeader: { mb: 3, mt: 1 },
+  pageTitle: { fontWeight: 700 },
+  pageSubtitle: { color: 'text.secondary', mt: 0.5 },
+  summaryCard: { p: 2, mb: 3 },
+  summaryRow: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  summaryCount: { fontWeight: 600 },
+  summaryTotal: { fontWeight: 700 },
+  paymentFieldset: {
+    border: 1,
+    borderColor: 'divider',
+    borderRadius: 3,
+    m: 0,
+    mb: 3,
+    p: 2,
+  },
+  paymentLegend: { px: 1, fontWeight: 600 },
+  paymentGroup: { gap: 1 },
+  errorAlert: { mb: 3 },
+  confirmButton: { mt: 3 },
+  flagPendingBox: { py: 6, textAlign: 'center' },
+  dialogContent: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 2,
+    minWidth: { xs: 'auto', sm: 420 },
+  },
+  qrWrap: { p: 2, bgcolor: 'background.paper', borderRadius: 2 },
+  codeRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 1,
+    width: '100%',
+  },
+  codeBox: {
+    flexGrow: 1,
+    p: 1.5,
+    bgcolor: 'background.default',
+    borderRadius: 1,
+    wordBreak: 'break-all',
+  },
+  validityText: { color: 'text.secondary', textAlign: 'center' },
+  barcodeBox: { textAlign: 'center' },
+  barcodeValue: { fontWeight: 700, letterSpacing: 1 },
+  dueRow: { display: 'flex', gap: 1 },
+} satisfies Record<string, SxProps<Theme>>

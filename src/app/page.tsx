@@ -1,9 +1,5 @@
-const Home = () => {
-  return (
-    <main>
-      <h1>Ofertas Express</h1>
-    </main>
-  );
-}
+import { redirect } from 'next/navigation'
 
-export default Home;
+const RootRoute = () => redirect('/home')
+
+export default RootRoute

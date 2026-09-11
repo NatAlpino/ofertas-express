@@ -1,21 +1,25 @@
-import type { Metadata } from "next";
-import "./globals.css";
+import type { Metadata } from 'next'
+
+import { AppShell } from '@/components/app-shell'
+
+import './globals.css'
+import { Providers } from './providers'
 
 export const metadata: Metadata = {
   title: {
-    default: "Ofertas Express",
-    template: "%s | Ofertas Express",
+    default: 'Ofertas Express',
+    template: '%s | Ofertas Express',
   },
-};
-
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <html lang="pt-BR">
-      <body>{children}</body>
-    </html>
-  );
 }
+
+const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => (
+  <html lang="pt-BR">
+    <body>
+      <Providers>
+        <AppShell>{children}</AppShell>
+      </Providers>
+    </body>
+  </html>
+)
+
+export default RootLayout

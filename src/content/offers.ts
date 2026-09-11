@@ -1,0 +1,16 @@
+export const offersContent = {
+  title: 'Ofertas Express',
+  subtitle: 'Renegocie com desconto',
+  debtLabel: 'Dívida',
+  offerLabel: 'Oferta',
+  addToCart: 'Adicionar ao carrinho',
+  inCart: 'No carrinho',
+  loadError: 'Não foi possível carregar as ofertas.',
+  loadPending: 'Carregando ofertas…',
+  emptyTitle: 'Não há ofertas disponíveis',
+  emptyMessage: 'No momento não existem ofertas disponíveis para você.',
+  checkoutSuccess: 'Acordo confirmado com sucesso!',
+  discountBadge: (percent: number) => `-${percent}% off`,
+  addToCartAria: (offerTitle: string) => `Adicionar ao carrinho: ${offerTitle}`,
+  inCartAria: (offerTitle: string) => `${offerTitle} já está no carrinho`,
+} as const
