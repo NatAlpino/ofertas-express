@@ -51,6 +51,12 @@ const OffersError = ({ onRetry }: OffersErrorProps) => (
   </Box>
 )
 
+const OffersEmpty = () => (
+  <Box role="status" sx={offersPageStyles.stateBox}>
+    <Typography sx={{ fontWeight: 600 }}>{offersContent.emptyTitle}</Typography>
+  </Box>
+)
+
 const OffersList = () => {
   const { data, isPending, isError, refetch } = useOffers()
   const completedIds = useCompletedOffersStore((state) => state.completedIds)
@@ -58,9 +64,12 @@ const OffersList = () => {
   if (isPending) return <OffersLoading />
   if (isError) return <OffersError onRetry={refetch} />
 
+  const offers = visibleOffers(data ?? [], completedIds)
+  if (offers.length === 0) return <OffersEmpty />
+
   return (
     <Grid container component="ul" spacing={2} sx={offersPageStyles.offerList}>
-      {visibleOffers(data ?? [], completedIds).map((offer) => (
+      {offers.map((offer) => (
         <Grid key={offer.id} component="li" size={{ xs: 12, md: 6 }}>
           <OfferCard offer={offer} />
         </Grid>

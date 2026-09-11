@@ -7,6 +7,8 @@ export const offersContent = {
   inCart: 'No carrinho',
   loadError: 'Não foi possível carregar as ofertas.',
   loadPending: 'Carregando ofertas…',
+  emptyTitle: 'Não há ofertas disponíveis',
+  emptyMessage: 'No momento não existem ofertas disponíveis para você.',
   checkoutSuccess: 'Acordo confirmado com sucesso!',
   discountBadge: (percent: number) => `-${percent}% off`,
   addToCartAria: (offerTitle: string) => `Adicionar ao carrinho: ${offerTitle}`,

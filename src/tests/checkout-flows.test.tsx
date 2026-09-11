@@ -206,6 +206,16 @@ describe('checkout flows', () => {
     ).not.toBeInTheDocument()
   })
 
+  it('shows an empty state when every offer has been paid', async () => {
+    useCompletedOffersStore.setState({ completedIds: ['oferta-1', 'oferta-2', 'oferta-3'] })
+
+    renderScreen(<HomePage />)
+
+    expect(await screen.findByText('Não há ofertas disponíveis')).toBeInTheDocument()
+    expect(screen.getByRole('status')).toHaveTextContent('Não há ofertas disponíveis')
+    expect(screen.queryByRole('button', { name: /Adicionar ao carrinho/ })).not.toBeInTheDocument()
+  })
+
   it('checkout API error: shows a message and keeps the cart', async () => {
     server.use(
       http.post('/api/checkout', () =>

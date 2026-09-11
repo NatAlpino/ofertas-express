@@ -47,12 +47,16 @@ describe('offers screen', () => {
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 
-  it('renders an empty list when the API returns no data and search params are unavailable', async () => {
-    searchParams = null
-    server.use(http.get('/api/offers', () => HttpResponse.json(null)))
-    render(<HomePage />, { wrapper: createWrapper() })
+  it.each([null, []])(
+    'shows the empty state when the API returns %s and search params are unavailable',
+    async (payload) => {
+      searchParams = null
+      server.use(http.get('/api/offers', () => HttpResponse.json(payload)))
+      render(<HomePage />, { wrapper: createWrapper() })
 
-    expect(await screen.findByRole('list')).toBeEmptyDOMElement()
-    expect(screen.queryByText('Acordo confirmado com sucesso!')).not.toBeInTheDocument()
-  })
+      expect(await screen.findByText('Não há ofertas disponíveis')).toBeInTheDocument()
+      expect(screen.queryByRole('list')).not.toBeInTheDocument()
+      expect(screen.queryByText('Acordo confirmado com sucesso!')).not.toBeInTheDocument()
+    }
+  )
 })
