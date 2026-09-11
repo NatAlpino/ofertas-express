@@ -3,11 +3,13 @@ import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import RootRoute from '@/app/page'
 import { AppShell } from '@/components/app-shell'
 import { BackButton } from '@/components/back-button'
+
 import { useCartStore } from '@/stores/cart'
 import { useSessionStore } from '@/stores/session'
+
+import RootRoute from '@/app/page'
 import { createWrapper } from '@/tests/utils'
 import { theme } from '@/theme'
 

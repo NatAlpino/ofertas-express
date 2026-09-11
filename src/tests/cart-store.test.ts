@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 
 import { useCartStore } from '@/stores/cart'
+
 import type { Offer } from '@/types'
 
 const offerA: Offer = {

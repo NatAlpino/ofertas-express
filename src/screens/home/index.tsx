@@ -4,10 +4,13 @@ import { Alert, Box, Button, CircularProgress, Grid, Typography } from '@mui/mat
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Suspense, useEffect } from 'react'
 
+import { useOffers } from '@/hooks/use-offers'
+
 import { commonContent } from '@/content/common'
 import { offersContent } from '@/content/offers'
-import { useOffers } from '@/hooks/use-offers'
+
 import { useCompletedOffersStore } from '@/stores/offers'
+
 import type { Offer } from '@/types'
 
 import { OfferCard } from './offer-card'

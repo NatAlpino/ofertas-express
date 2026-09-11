@@ -2,6 +2,7 @@ import { http, HttpResponse } from 'msw'
 import { describe, expect, it } from 'vitest'
 
 import { server } from '@/mocks/server'
+
 import { apiFetch, ApiError } from '@/services/api'
 import {
   parseCheckoutFlag,

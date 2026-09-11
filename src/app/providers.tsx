@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react'
 
 import { startMockWorker } from '@/mocks/browser'
 import { exposeFlagToggle } from '@/mocks/flag-toggle'
+
 import { theme } from '@/theme'
 
 const startWorkerInDev = (queryClient: QueryClient) => {

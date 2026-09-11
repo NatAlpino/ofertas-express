@@ -5,11 +5,14 @@ import { Box, Button, Card, Grid, Stack, Typography } from '@mui/material'
 import Link from 'next/link'
 
 import { BackButton } from '@/components/back-button'
+
 import { checkoutContent } from '@/content/checkout'
 import { historyContent } from '@/content/history'
+
+import { formatBRL, formatDate } from '@/utils/format'
+
 import type { HistoryEntry, HistoryMethod } from '@/stores/history'
 import { sortByPaidAtDesc, useHistoryStore } from '@/stores/history'
-import { formatBRL, formatDate } from '@/utils/format'
 
 import { historyPageStyles } from './style'
 

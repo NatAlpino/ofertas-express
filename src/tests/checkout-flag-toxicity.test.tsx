@@ -3,12 +3,15 @@ import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { describe, expect, it, vi, beforeEach } from 'vitest'
 
-import CheckoutPage from '@/app/checkout/page'
 import { checkoutContent } from '@/content/checkout'
+
 import { server } from '@/mocks/server'
+
 import { useCartStore } from '@/stores/cart'
 import { useHistoryStore } from '@/stores/history'
 import { useCompletedOffersStore } from '@/stores/offers'
+
+import CheckoutPage from '@/app/checkout/page'
 import { createTestQueryClient, createWrapper } from '@/tests/utils'
 
 const pushMock = vi.fn()

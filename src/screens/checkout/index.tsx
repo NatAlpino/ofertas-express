@@ -16,15 +16,20 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 import { BackButton } from '@/components/back-button'
-import { checkoutContent } from '@/content/checkout'
+
 import { useCheckoutFlag } from '@/hooks/use-checkout-flag'
 import { useConfirmCheckout } from '@/hooks/use-confirm-checkout'
+
+import { checkoutContent } from '@/content/checkout'
+
+import { formatBRL } from '@/utils/format'
+
 import { useCartStore } from '@/stores/cart'
 import type { HistoryMethod } from '@/stores/history'
 import { useHistoryStore } from '@/stores/history'
 import { useCompletedOffersStore } from '@/stores/offers'
+
 import type { CheckoutRequest, Offer, PaymentInstructions, PaymentMethod } from '@/types'
-import { formatBRL } from '@/utils/format'
 
 import { PaymentInstructionsDialog } from './payment-instructions-dialog'
 import { checkoutPageStyles } from './style'

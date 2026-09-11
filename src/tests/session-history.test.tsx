@@ -5,16 +5,19 @@ import { http, HttpResponse } from 'msw'
 import { describe, expect, it, vi, beforeEach } from 'vitest'
 
 
-import CheckoutRoute from '@/app/checkout/page'
-import HistoryRoute from '@/app/historico/page'
-import LoginRoute from '@/app/login/page'
-import ProfileRoute from '@/app/perfil/page'
 import { AppShell } from '@/components/app-shell'
+
 import { server } from '@/mocks/server'
+
 import { useCartStore } from '@/stores/cart'
 import { useHistoryStore } from '@/stores/history'
 import { useCompletedOffersStore } from '@/stores/offers'
 import { useSessionStore } from '@/stores/session'
+
+import CheckoutRoute from '@/app/checkout/page'
+import HistoryRoute from '@/app/historico/page'
+import LoginRoute from '@/app/login/page'
+import ProfileRoute from '@/app/perfil/page'
 import { createTestQueryClient, createWrapper } from '@/tests/utils'
 import { theme } from '@/theme'
 

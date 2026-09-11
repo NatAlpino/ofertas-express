@@ -5,9 +5,12 @@ import { Box, Button, Card, Grid, IconButton, Stack, Typography } from '@mui/mat
 import Link from 'next/link'
 
 import { BackButton } from '@/components/back-button'
+
 import { cartContent } from '@/content/cart'
-import { useCartStore } from '@/stores/cart'
+
 import { formatBRL } from '@/utils/format'
+
+import { useCartStore } from '@/stores/cart'
 
 import { cartPageStyles } from './style'
 

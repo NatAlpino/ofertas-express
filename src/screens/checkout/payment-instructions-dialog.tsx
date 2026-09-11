@@ -5,23 +5,24 @@ import {
   Box,
   Button,
   Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   IconButton,
   Typography,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material'
 import { useState } from 'react'
 import QRCode from 'react-qr-code'
 
 import { paymentContent } from '@/content/payment'
-import type {
-  BoletoPaymentInstructions,
-  PaymentInstructions,
-  PixPaymentInstructions,
-} from '@/types'
+
 import { formatDate } from '@/utils/format'
 
+import type {
+  PaymentInstructions,
+  PixPaymentInstructions,
+  BoletoPaymentInstructions,
+} from '@/types'
 
 import { checkoutPageStyles } from './style'
 

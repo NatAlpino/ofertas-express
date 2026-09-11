@@ -3,12 +3,14 @@ import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import HomePage from '@/app/home/page'
 import { offers } from '@/mocks/data'
 import { server } from '@/mocks/server'
-import { visibleOffers } from '@/screens/home'
+
 import { useCartStore } from '@/stores/cart'
 import { useCompletedOffersStore } from '@/stores/offers'
+
+import HomePage from '@/app/home/page'
+import { visibleOffers } from '@/screens/home'
 import { createWrapper } from '@/tests/utils'
 
 const replaceMock = vi.fn()

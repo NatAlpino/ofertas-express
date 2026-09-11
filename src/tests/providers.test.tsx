@@ -1,8 +1,9 @@
 import { renderHook } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { Providers } from '@/app/providers'
 import { handlers } from '@/mocks/handlers'
+
+import { Providers } from '@/app/providers'
 
 const { startWorker, setupWorker } = vi.hoisted(() => {
   const startWorker = vi.fn().mockResolvedValue(undefined)

@@ -8,8 +8,10 @@ import { useState } from 'react'
 
 import { commonContent } from '@/content/common'
 import { loginContent } from '@/content/login'
-import { resetAllStores } from '@/stores'
+
 import { useSessionStore } from '@/stores/session'
+
+import { resetAllStores } from '@/stores'
 
 import { loginPageStyles } from './style'
 

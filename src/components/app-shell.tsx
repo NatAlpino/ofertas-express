@@ -35,9 +35,11 @@ import { commonContent } from '@/content/common'
 import { historyContent } from '@/content/history'
 import { navigationContent } from '@/content/navigation'
 import { profileContent } from '@/content/profile'
-import { resetAllStores } from '@/stores'
+
 import { useCartStore } from '@/stores/cart'
 import { useSessionStore } from '@/stores/session'
+
+import { resetAllStores } from '@/stores'
 
 const DRAWER_WIDTH = 240
 const LOGIN_ROUTE = '/login'
