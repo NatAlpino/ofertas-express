@@ -1,9 +1,9 @@
-import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { offers } from '@/mocks/data'
 import CartPage from '@/app/carrinho/page'
+import { offers } from '@/mocks/data'
 import { useCartStore } from '@/stores/cart'
 
 vi.mock('next/navigation', () => ({ useRouter: () => ({ back: vi.fn() }) }))

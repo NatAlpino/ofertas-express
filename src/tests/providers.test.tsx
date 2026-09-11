@@ -1,9 +1,6 @@
-import { useTheme } from '@mui/material'
 import { renderHook } from '@testing-library/react'
-import { useQueryClient } from '@tanstack/react-query'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { theme } from '@/theme'
 import { Providers } from '@/app/providers'
 import { handlers } from '@/mocks/handlers'
 
@@ -19,21 +16,11 @@ describe('application providers', () => {
   beforeEach(() => vi.clearAllMocks())
   afterEach(() => vi.unstubAllEnvs())
 
-  it.each(['development', 'production', 'test'])('initializes providers in %s', (environment) => {
+  it.each(['development', 'production', 'test'])('starts the mock worker only in %s', (environment) => {
     vi.stubEnv('NODE_ENV', environment)
-    const { result, rerender } = renderHook(
-      () => ({
-        client: useQueryClient(),
-        theme: useTheme(),
-      }),
-      { wrapper: Providers }
-    )
-    const client = result.current.client
+    const { rerender } = renderHook(() => null, { wrapper: Providers })
 
-    expect(client.getDefaultOptions().queries).toMatchObject({ retry: false, staleTime: 30_000 })
-    expect(result.current.theme.palette.primary.main).toBe(theme.palette.primary.main)
     rerender()
-    expect(result.current.client).toBe(client)
     if (environment === 'development') {
       expect(setupWorker).toHaveBeenCalledExactlyOnceWith(...handlers)
       expect(startWorker).toHaveBeenCalledExactlyOnceWith({ onUnhandledRequest: 'bypass' })

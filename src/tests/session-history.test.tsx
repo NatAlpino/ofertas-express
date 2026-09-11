@@ -1,24 +1,22 @@
-import { http, HttpResponse } from 'msw'
-import userEvent from '@testing-library/user-event'
-import { describe, expect, it, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
-
 import { ThemeProvider } from '@mui/material'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { http, HttpResponse } from 'msw'
+import { describe, expect, it, vi, beforeEach } from 'vitest'
 
-import { AppShell } from '@/components/app-shell'
 
-import LoginRoute from '@/app/login/page'
-import ProfileRoute from '@/app/perfil/page'
 import CheckoutRoute from '@/app/checkout/page'
 import HistoryRoute from '@/app/historico/page'
-
-import { theme } from '@/theme'
+import LoginRoute from '@/app/login/page'
+import ProfileRoute from '@/app/perfil/page'
+import { AppShell } from '@/components/app-shell'
 import { server } from '@/mocks/server'
 import { useCartStore } from '@/stores/cart'
-import { createTestQueryClient, createWrapper } from '@/tests/utils'
 import { useHistoryStore } from '@/stores/history'
-import { useSessionStore } from '@/stores/session'
 import { useCompletedOffersStore } from '@/stores/offers'
+import { useSessionStore } from '@/stores/session'
+import { createTestQueryClient, createWrapper } from '@/tests/utils'
+import { theme } from '@/theme'
 
 const pushMock = vi.fn()
 const replaceMock = vi.fn()
@@ -67,12 +65,23 @@ describe('session, route guard and history flows', () => {
     const user = userEvent.setup()
 
     renderScreen(<LoginRoute />)
-    await user.type(screen.getByLabelText('Usuário'), 'maria')
+    await user.type(screen.getByLabelText(/^Usuário/), 'maria')
     await user.type(screen.getByLabelText('Senha'), 'qualquer-uma')
     await user.click(screen.getByRole('button', { name: 'Entrar' }))
 
     expect(useSessionStore.getState().username).toBe('maria')
     expect(pushMock).toHaveBeenCalledWith('/home')
+  })
+
+  it('blocks login with an empty or blank username', async () => {
+    const user = userEvent.setup()
+
+    renderScreen(<LoginRoute />)
+    await user.type(screen.getByLabelText(/^Usuário/), '   ')
+    await user.click(screen.getByRole('button', { name: 'Entrar' }))
+
+    expect(useSessionStore.getState().username).toBeNull()
+    expect(pushMock).not.toHaveBeenCalled()
   })
 
   it('logout clears the session and goes back to the login screen', async () => {
@@ -145,7 +154,7 @@ describe('session, route guard and history flows', () => {
     const user = userEvent.setup()
 
     render(<LoginRoute />, { wrapper: createWrapper(client) })
-    await user.type(screen.getByLabelText('Usuário'), 'maria')
+    await user.type(screen.getByLabelText(/^Usuário/), 'maria')
     await user.click(screen.getByRole('button', { name: 'Entrar' }))
 
     expect(useCartStore.getState().items).toHaveLength(0)

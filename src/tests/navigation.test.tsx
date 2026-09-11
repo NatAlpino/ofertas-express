@@ -1,16 +1,17 @@
 import { ThemeProvider } from '@mui/material'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { render, screen, waitFor, within } from '@testing-library/react'
 
-import { theme } from '@/theme'
-import { useCartStore } from '@/stores/cart'
+import RootRoute from '@/app/page'
 import { AppShell } from '@/components/app-shell'
+import { BackButton } from '@/components/back-button'
+import { useCartStore } from '@/stores/cart'
 import { useSessionStore } from '@/stores/session'
 import { createWrapper } from '@/tests/utils'
-import RootRoute from '@/app/page'
+import { theme } from '@/theme'
 
-const router = { push: vi.fn(), replace: vi.fn() }
+const router = { push: vi.fn(), replace: vi.fn(), back: vi.fn() }
 let pathname: string | null = '/home'
 
 vi.mock('next/navigation', () => ({
@@ -124,5 +125,39 @@ describe('app navigation', () => {
     historyLink.addEventListener('click', (event) => event.preventDefault())
     await user.click(historyLink)
     await waitFor(() => expect(screen.queryByRole('presentation')).not.toBeInTheDocument())
+  })
+
+  describe('back button', () => {
+    const renderBackButton = () =>
+      render(
+        <ThemeProvider theme={theme}>
+          <BackButton />
+        </ThemeProvider>
+      )
+
+    beforeEach(() => {
+      window.history.replaceState(null, '')
+    })
+
+    it('goes back in history when there is a previous entry', async () => {
+      window.history.replaceState({ idx: 2 }, '')
+      const user = userEvent.setup()
+      renderBackButton()
+
+      await user.click(screen.getByRole('button', { name: 'Voltar' }))
+
+      expect(router.back).toHaveBeenCalled()
+      expect(router.push).not.toHaveBeenCalled()
+    })
+
+    it('falls back to home when there is no previous entry', async () => {
+      const user = userEvent.setup()
+      renderBackButton()
+
+      await user.click(screen.getByRole('button', { name: 'Voltar' }))
+
+      expect(router.push).toHaveBeenCalledWith('/home')
+      expect(router.back).not.toHaveBeenCalled()
+    })
   })
 })

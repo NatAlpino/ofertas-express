@@ -1,23 +1,37 @@
-import { http, HttpResponse } from 'msw'
-import userEvent from '@testing-library/user-event'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { http, HttpResponse } from 'msw'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import HomePage from '@/app/home/page'
 import { offers } from '@/mocks/data'
 import { server } from '@/mocks/server'
+import { visibleOffers } from '@/screens/home'
 import { useCartStore } from '@/stores/cart'
-import { createWrapper } from '@/tests/utils'
 import { useCompletedOffersStore } from '@/stores/offers'
+import { createWrapper } from '@/tests/utils'
 
+const replaceMock = vi.fn()
 let searchParams: URLSearchParams | null
-vi.mock('next/navigation', () => ({ useSearchParams: () => searchParams }))
+vi.mock('next/navigation', () => ({
+  useSearchParams: () => searchParams,
+  useRouter: () => ({ replace: replaceMock }),
+}))
 
 describe('offers screen', () => {
   beforeEach(() => {
     searchParams = new URLSearchParams()
+    replaceMock.mockClear()
     useCartStore.getState().clear()
     useCompletedOffersStore.setState({ completedIds: [] })
+  })
+
+  it.each([
+    [undefined, [], []],
+    [offers, ['oferta-1'], ['oferta-2', 'oferta-3']],
+    [offers, [], ['oferta-1', 'oferta-2', 'oferta-3']],
+  ])('visibleOffers(%j, %j) returns %j', (data, completedIds, expected) => {
+    expect(visibleOffers(data, completedIds).map((offer) => offer.id)).toEqual(expected)
   })
 
   it('shows confirmation after a successful checkout', async () => {
@@ -28,6 +42,7 @@ describe('offers screen', () => {
     expect(
       within(screen.getByRole('status')).getByText('Acordo confirmado com sucesso!')
     ).toBeVisible()
+    expect(replaceMock).toHaveBeenCalledWith('/home')
   })
 
   it('recovers from a loading error when the user retries', async () => {
@@ -45,6 +60,20 @@ describe('offers screen', () => {
       await screen.findByRole('button', { name: 'Adicionar ao carrinho: Negocie agora' })
     ).toBeEnabled()
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
+
+  it('shows a loading error when the API returns an unexpected shape', async () => {
+    server.use(
+      http.get('/api/offers', () =>
+        HttpResponse.json([{ id: 'oferta-1', title: 'Negocie agora', offerPrice: '98000' }])
+      )
+    )
+    render(<HomePage />, { wrapper: createWrapper() })
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Não foi possível carregar as ofertas.'
+    )
+    expect(screen.queryByRole('list')).not.toBeInTheDocument()
   })
 
   it.each([null, []])(
