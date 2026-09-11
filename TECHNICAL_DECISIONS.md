@@ -154,6 +154,8 @@ Quando existe histórico de navegação dentro da aplicação, preservo o compor
 
 O comportamento do checkout é controlado pela feature flag `checkoutV2`.
 
+Nos mocks, o valor padrão da flag vem da variável de ambiente `NEXT_PUBLIC_CHECKOUT_V2` (ligada por padrão, desligada quando definida como `false`). Em desenvolvimento, basta alterar a variável e reiniciar o servidor. Nos testes, o helper `setCheckoutV2Override` grava um override no `localStorage` que tem precedência sobre o env.
+
 Mantive dois fluxos:
 
 ### Flag desabilitada
