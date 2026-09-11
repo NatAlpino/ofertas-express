@@ -1,12 +1,14 @@
 'use client'
 
 import { ThemeProvider } from '@mui/material'
-import CssBaseline from '@mui/material/CssBaseline'
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import CssBaseline from '@mui/material/CssBaseline'
 import { useEffect, useState } from 'react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
 
 import { startMockWorker } from '@/mocks/browser'
+
 
 import { theme } from '@/theme'
 

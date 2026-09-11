@@ -1,17 +1,23 @@
+
+import { http, HttpResponse } from 'msw'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { http, HttpResponse } from 'msw'
 import { describe, expect, it, vi, beforeEach } from 'vitest'
+
 
 import { checkoutContent } from '@/content/checkout'
 
+
 import { server } from '@/mocks/server'
 
+
 import { formatDate } from '@/utils/format'
+
 
 import { useCartStore } from '@/stores/cart'
 import { useHistoryStore } from '@/stores/history'
 import { useCompletedOffersStore } from '@/stores/offers'
+
 
 import CartPage from '@/app/carrinho/page'
 import CheckoutPage from '@/app/checkout/page'
