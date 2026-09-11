@@ -266,6 +266,8 @@ Entre os principais cenários estão:
 
 O MSW também permite alterar respostas por teste, o que facilita validar cenários de erro sem introduzir condicionais específicas no código da aplicação.
 
+Sobre cobertura: o relatório de cobertura é gerado como informação (`npm run test:coverage`), mas não como exigência de 100% por arquivo. Em uma revisão posterior, removi testes que existiam apenas para cumprir threshold — testes de setters triviais de store, smoke tests e assertivas sobre constantes — mantendo apenas testes que protegem comportamento real. Cobertura menor com testes que fazem sentido é preferível ao inverso; branches defensivos (guards contra estado inválido) ficam deliberadamente sem teste dedicado.
+
 ## Convenções de código
 
 Mantive algumas convenções para tornar o código previsível e uniforme:
