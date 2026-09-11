@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+
 import { discountPercent, formatBRL, formatDate } from '@/utils/format'
 
 const NBSP = '\u00A0'
@@ -10,6 +11,10 @@ describe('discountPercent', () => {
 
   it('rounds the discount to a whole percentage', () => {
     expect(discountPercent(300, 100)).toBe(67)
+  })
+
+  it('clamps to zero when the offer price exceeds the debt', () => {
+    expect(discountPercent(100, 150)).toBe(0)
   })
 })
 
@@ -28,5 +33,9 @@ describe('formatBRL', () => {
 describe('formatDate', () => {
   it('formats an ISO date as pt-BR date', () => {
     expect(formatDate(new Date(2026, 8, 10).toISOString())).toBe('10/09/2026')
+  })
+
+  it('returns an empty string for an invalid date', () => {
+    expect(formatDate('not-a-date')).toBe('')
   })
 })
