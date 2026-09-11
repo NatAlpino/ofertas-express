@@ -8,8 +8,8 @@ import { BackButton } from '@/components/back-button'
 
 import { formatBRL, formatDate } from '@/utils/format'
 
-import { checkoutContent } from '@/content/checkout'
 import { historyContent } from '@/content/history'
+import { checkoutContent } from '@/content/checkout'
 
 import type { HistoryEntry, HistoryMethod } from '@/stores/history'
 import { sortByPaidAtDesc, useHistoryStore } from '@/stores/history'

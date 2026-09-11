@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react'
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from '@mui/material'
 import CssBaseline from '@mui/material/CssBaseline'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter'
 
 import { theme } from '@/theme'
